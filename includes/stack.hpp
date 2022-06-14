@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/07 18:09:21 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/07 21:10:27 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/06/13 13:20:58 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ namespace ft
 				return (lhs.c < rhs.c);
 			}
 	};
+	
 	template <class T, class Container>
 	bool operator!=(const ft::stack<T, Container>& lhs, const ft::stack<T, Container>& rhs)
 	{
