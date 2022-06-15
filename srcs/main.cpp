@@ -6,12 +6,16 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/14 18:10:49 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/06/15 15:05:21 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "vector.hpp"
 #include "stack.hpp"
+#include "reverse_iterator.hpp"
+#include "iterator_traits.hpp"
+#include "iterator.hpp"
+#include "iterator_tags.hpp"
 
 int	main()
 {
