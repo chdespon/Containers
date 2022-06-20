@@ -2,7 +2,7 @@ NAME = Containers
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -g #3 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address
 
 SRCS_DIR = $(shell find srcs -type d)
 

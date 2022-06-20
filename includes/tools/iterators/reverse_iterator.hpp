@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 12:57:49 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/15 15:05:33 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/06/16 14:59:02 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ namespace ft
 			explicit reverse_iterator(Iterator x):current(x) {}
 
 			template <class U>
-			reverse_iterator(const reverse_iterator<U>& u) :current(u.current) {}
+			reverse_iterator(const reverse_iterator<U>& u): current(u.current) {}
 
 			Iterator base() const {return (current);} // explicit
 

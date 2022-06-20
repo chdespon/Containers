@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/15 15:05:21 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/06/20 18:07:38 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "iterator_traits.hpp"
 #include "iterator.hpp"
 #include "iterator_tags.hpp"
+#include "random_access_iterator.hpp"
 
 int	main()
 {
@@ -97,6 +98,63 @@ int	main()
 	// third.assign (myints,myints+3);
 	std::cout << "Size of first: " << int (first.size()) << '\n';
 	// std::cout << "Size of third: " << int (third.size()) << '\n';
+
+	ft::vector<int> vectorInsert (3,100);
+	ft::vector<int>::iterator it;
+
+	it = vectorInsert.begin();
+	it = vectorInsert.insert ( it , 200 );
+
+	vectorInsert.insert (it,2,300);
+
+	// "it" no longer valid, get a new one:
+	it = vectorInsert.begin();
+
+	// ft::vector<int> anothervector (2,400);
+	// vectorInsert.insert (it+2,anothervector.begin(),anothervector.end());
+
+	// int myarray [] = { 501,502,503 };
+	// vectorInsert.insert (vectorInsert.begin(), myarray, myarray+3);
+
+	std::cout << "vectorInsert contains:";
+	for (it=vectorInsert.begin(); it<vectorInsert.end(); it++)
+		std::cout << ' ' << *it;
+	std::cout << '\n';
+	std::cout << '\n';
+	std::cout << '\n';
+
+	ft::vector<int> foo1 (3,100);   // three ints with a value of 100
+	ft::vector<int> bar1 (5,200);   // five ints with a value of 200
+
+	foo1.swap(bar1);
+
+	std::cout << "foo1 contains:";
+	for (unsigned i=0; i<foo1.size(); i++)
+		std::cout << ' ' << foo1[i];
+	std::cout << '\n';
+
+	std::cout << "bar1 contains:";
+	for (unsigned i=0; i<bar1.size(); i++)
+		std::cout << ' ' << bar1[i];
+	std::cout << '\n';
+	std::cout << '\n';
+	std::cout << '\n';
+
+	ft::vector<int> newVector;
+
+	// set some values (from 1 to 10)
+	for (int i=1; i<=10; i++) newVector.push_back(i);
+
+	// erase the 6th element
+	newVector.erase (newVector.begin()+5);
+
+	// erase the first 3 elements:
+	// newVector.erase (newVector.begin(),newVector.begin()+3);
+
+	std::cout << "newVector contains:";
+	for (unsigned i=0; i<newVector.size(); ++i)
+		std::cout << ' ' << newVector[i];
+	std::cout << '\n';
 
 	return (0);
 }
