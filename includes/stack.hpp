@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/07 18:09:21 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/15 14:51:41 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/06/27 15:05:42 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,20 +32,20 @@ namespace ft
 		public:
 			explicit stack(const Container&c = Container()): c(c) {}
 
-			bool empty() const { return c.empty(); }
-			size_type size() const { return c.size(); }
+			bool empty() const {return c.empty();}
+			size_type size() const {return c.size();}
 
-			value_type& top() { return c.back(); }
-			const value_type& top() const { return c.back(); }
+			value_type& top() {return c.back();}
+			const value_type& top() const {return c.back();}
 
-			void push(const value_type& x) { c.push_back(x); }
-			void pop() { c.pop_back(); }
+			void push(const value_type& x) {c.push_back(x);}
+			void pop() {c.pop_back();}
 
-			friend bool	operator==( const stack<T, Container>& lhs, const stack<T, Container>& rhs )
+			friend bool	operator==(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
 			{
 				return (lhs.c == rhs.c);
 			}
-			friend bool	operator<( const stack<T, Container>& lhs, const stack<T, Container>& rhs )
+			friend bool	operator<(const stack<T, Container>& lhs, const stack<T, Container>& rhs)
 			{
 				return (lhs.c < rhs.c);
 			}

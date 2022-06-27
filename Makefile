@@ -1,4 +1,5 @@
 NAME = Containers
+FT_NAME = ftContainers
 
 CC = c++
 
@@ -13,6 +14,9 @@ vpath %.cpp $(foreach dir, $(SRCS_DIR), $(dir):)
 SRCS = main.cpp
 
 OBJ_DIR = objs
+FT_OBJ_DIR = ft_objs
+
+FT_OBJS = $(addprefix $(FT_OBJ_DIR)/, $(SRCS:%.cpp=%.o))
 
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:%.cpp=%.o))
 
@@ -29,7 +33,7 @@ _PURPLE=$'\033[35m
 _CYAN=	$'\033[36m
 _WHITE=	$'\033[37m
 
-all: $(NAME)
+all: $(FT_NAME)
 
 show:
 				@echo "$(_BLUE)SRCS :\n$(_YELLOW)$(SRCS) $(_WHITE)"
@@ -43,7 +47,13 @@ show:
 $(OBJ_DIR)/%.o : %.cpp
 				@echo -n "Compiling $(_YELLOW)$@$(_WHITE) ... "
 				@mkdir -p $(OBJ_DIR)
-				$(CC) $(CFLAGS) $(IFLAGS) -o $@ -c $<
+				$(CC) $(CFLAGS) $(IFLAGS) -o $@ -c -D FT=false $<
+				@echo "$(_GREEN)DONE$(_WHITE)"
+
+$(FT_OBJ_DIR)/%.o : %.cpp
+				@echo -n "Compiling $(_YELLOW)$@$(_WHITE) ... "
+				@mkdir -p $(FT_OBJ_DIR)
+				$(CC) $(CFLAGS) $(IFLAGS) -o $@ -c -D FT=true $<
 				@echo "$(_GREEN)DONE$(_WHITE)"
 
 $(NAME):		$(INC_DIR) $(OBJS) Makefile
@@ -51,7 +61,17 @@ $(NAME):		$(INC_DIR) $(OBJS) Makefile
 				@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 				@echo "$(_GREEN)DONE$(_WHITE)\n-----"
 
-exec: $(NAME)
+$(FT_NAME):		$(INC_DIR) $(FT_OBJS) Makefile
+				@echo -n "-----\nCreating Executable $(_YELLOW)$@$(_WHITE) ... "
+				@$(CC) $(CFLAGS) $(FT_OBJS) -o $(FT_NAME)
+				@echo "$(_GREEN)DONE$(_WHITE)\n-----"
+
+ft: $(FT_NAME)
+				@echo "Launch Binary File $(_BLUE)$(FT_NAME)$(_WHITE)\n-----"
+				@./$(FT_NAME)
+				@echo "-----\n$(_BLUE)$(FT_NAME) $(_GREEN)successfully end$(_WHITE)\n-----"
+
+std: $(NAME)
 				@echo "Launch Binary File $(_BLUE)$(NAME)$(_WHITE)\n-----"
 				@./$(NAME)
 				@echo "-----\n$(_BLUE)$(NAME) $(_GREEN)successfully end$(_WHITE)\n-----"
@@ -61,13 +81,13 @@ re: fclean all
 clean:
 				@echo -n "$(_WHITE)Deleting Objects Directory $(_YELLOW)$(OBJ_DIR)" \
 				"$(_WHITE) ... "
-				@rm -rf $(OBJ_DIR)
+				@rm -rf $(OBJ_DIR) $(FT_OBJ_DIR)
 				@echo "$(_GREEN)DONE$(_WHITE)\n-----"
 
 fclean:			clean
 				@echo -n "Deleting Binaries Files $(_YELLOW)$(NAME)" \
 				"$(_WHITE) ... "
-				@rm -f $(NAME)
+				@rm -f $(NAME) $(FT_NAME)
 				@echo "$(_GREEN)DONE$(_WHITE)\n-----"
 
 .PHONY: all re clean fclean

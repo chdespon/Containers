@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:06:25 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/20 18:20:33 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/06/27 16:36:47 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 # include <iostream>
 # include "random_access_iterator.hpp"
 # include "reverse_iterator.hpp"
+# include "enable_if.hpp"
+# include "is_integral.hpp"
 
 namespace ft
 {
@@ -45,7 +47,7 @@ namespace ft
 			typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 
 		private:
-			T			*_datas;
+			pointer		_datas;
 			size_type	_capacity;
 			size_type	_size;
 			Allocator	_allocator;
@@ -134,12 +136,12 @@ namespace ft
 					reserve(n);
 				if (n > _size)
 				{
-					for (size_type i = _size; i < n; i++)
+					for (size_type i = _size; i < n; ++i)
 						_allocator.construct(&_datas[i], val);
 				}
 				else if (n < _size)
 				{
-					for (size_type i = n; i < _size; i++)
+					for (size_type i = n; i < _size; ++i)
 						_allocator.destroy(&_datas[i]);
 				}
 				_size = n;
@@ -157,7 +159,7 @@ namespace ft
 				if (n > _capacity)
 				{
 					pointer tmp = _allocator.allocate(n);
-					for (size_type i = 0; i < _size; i++)
+					for (size_type i = 0; i < _size; ++i)
 					{
 						_allocator.construct(&tmp[i], _datas[i]);
 						_allocator.destroy(&_datas[i]);
@@ -210,8 +212,23 @@ namespace ft
 
 			iterator insert(iterator position, const T& val)
 			{
-				insert(position, 1, val);
-				return (position);
+				size_type n = 0;
+				// size_type n = std::distance(begin(), position);
+				for (iterator it = begin(); it < position; ++it, ++n)
+
+
+				// std::cout << n << "ici\n" << std::endl;
+				if (_capacity == 0)
+					reserve(1);
+				else if (_size == _capacity)
+					reserve(_capacity * 2);
+				for (size_type i = _size; i > n; --i)
+					_allocator.construct(&_datas[i], _datas[i - 1]);
+				_allocator.construct(&_datas[n], val);
+				_size++;
+				return (iterator(&_datas[n]));
+				// insert(position, 1, val);
+				// return (position);
 			}
 
 			void insert(iterator position, size_type n, const T& val)
@@ -223,56 +240,95 @@ namespace ft
 				else if (_size + n > _capacity)
 					reserve(_capacity * 2);
 
-				size_type i = _size + n - 1;
-
-				for (; i > j; i--)
+				// size_type i = _size + n - 1;
+				position = begin() + j;
+				while (n)
 				{
-					_allocator.construct(_datas + i, *(_datas + i - n));
-					_allocator.destroy(_datas + i - n);
+					--n;
+					insert(position++, val);
 				}
+				// for (; i > j; --i)
+				// {
+				// 	// std::cout << "ici\n";
+				// 	_allocator.construct(_datas + i, *(_datas + i - n));
+				// 	_allocator.destroy(_datas + i - n);
+				// }
 
-				size_type test = j + n;
+				// size_type k = j + n;
 
-				for (; j < test; j++)
-					_allocator.construct(_datas + j, val);
-				_size += n;
+				// for (; j < k; ++j)
+				// {
+				// 	// std::cout << " ici\n";
+				// 	_allocator.construct(_datas + j, val);
+				// }
+				// _size += n;
 			}
 
-			// template <class InputIterator>
-			// void insert(iterator position, InputIterator first, InputIterator last);
+			template <class InputIterator>
+			void insert(iterator position, InputIterator first,
+				typename ft::enable_if<!is_integral<InputIterator>::value, InputIterator>::type last)
+			{
+				size_type n = 0;
+				for (InputIterator it = first; it != last; ++it, ++n)
+
+				// for (; first != last; ++first, ++position)
+				// 	insert(position, *first);
+				if (_size + n > _capacity * 2)
+					reserve(_size + n);
+				 else if (_size + n > _capacity)
+					reserve(_capacity * 2);
+
+				size_type j = position - begin();
+				position = begin() + j;
+				while(first != last)
+				{
+					insert(position++, *first++);
+				}
+				// size_type i = _size + n - 1;
+
+				// for (; i > j; --i)
+				// {
+				// 	_allocator.construct(_datas + i, *(_datas + i - n));
+				// 	_allocator.destroy(_datas + i - n);
+				// }
+
+				// for (; first != last; ++first, ++j)
+				// {
+				// 	// insert(position, *first);
+				// 	_allocator.construct(_datas + j, *first);
+				// }
+				// _size += n;
+			}
+
 			iterator erase(iterator position)
 			{
-				// iterator it_end = end();
-				iterator it = position;
-				Allocator alloc;
-				for (; it != (end() - 1); it++)
+				iterator replace(position);
+				iterator it_end(end());
+
+				while (position + 1 != it_end)
 				{
-					std::cout << it << "\n";
-					_datas[it - begin()] = *(it + 1);
+					*position = *(position + 1);
+					*position++;
 				}
-				// while (it != (it_end - 1))
-				// {
-				// }
-				// std::cout << _datas[begin() - it];
-				alloc.destroy(&_datas[it - begin()]);
+				_allocator.destroy(&*position);
 				--_size;
-				return (position);
+				return (replace);
 			}
 
 			iterator erase(iterator first, iterator last)
 			{
-				for (iterator it = first; it != last; it++)
-					_allocator.destroy(_datas + (it - begin()));
-				//std::cout << "last: " << *last << std::endl;
-				for (iterator it1 = first, it2 = last; it2 != end(); it1++, it2++)
+				iterator it_return(first);
+				iterator it_end(end());
+
+				while (last < it_end)
+					*first++ = *last++;
+				while (first < it_end)
 				{
-					size_type i = it2 - begin();
-					_allocator.destroy(_datas + i);
-					size_type j = it1 - begin();
-					_allocator.construct(_datas + j, *it2);
+					_allocator.destroy(&*first);
+					++first;
+					--_size;
 				}
-				_size -= (last - first);
-				return (first);
+				return (it_return);
 			}
 
 			void swap(vector<T,Allocator> &x)

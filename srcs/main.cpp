@@ -6,25 +6,32 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/20 18:07:38 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/06/27 16:35:44 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "vector.hpp"
-#include "stack.hpp"
-#include "reverse_iterator.hpp"
-#include "iterator_traits.hpp"
-#include "iterator.hpp"
-#include "iterator_tags.hpp"
-#include "random_access_iterator.hpp"
+#include <iostream>
+#include <string>
+#include <deque>
+#include <stdlib.h>
+
+# if FT //CREATE A REAL STL EXAMPLE
+	// #include <map.hpp>
+	# include <stack.hpp>
+	# include <vector.hpp>
+# else
+	# include <map>
+	# include <stack>
+	# include <vector>
+	namespace ft = std;
+
+# endif
 
 int	main()
 {
 	ft::vector<int> b(15, 6);
 	std::cout << b[3] << "\n";
 	ft::stack<int>::value_type stack_int;
-
-
 
 	stack_int = 69;
 
@@ -98,23 +105,32 @@ int	main()
 	// third.assign (myints,myints+3);
 	std::cout << "Size of first: " << int (first.size()) << '\n';
 	// std::cout << "Size of third: " << int (third.size()) << '\n';
+	std::cout << '\n';
+	std::cout << '\n';
+	std::cout << '\n';
+
 
 	ft::vector<int> vectorInsert (3,100);
 	ft::vector<int>::iterator it;
 
 	it = vectorInsert.begin();
 	it = vectorInsert.insert ( it , 200 );
+	// for (it=vectorInsert.begin(); it<vectorInsert.end(); it++)
+	// 	std::cout << ' ' << *it;
+	// std::cout << '\n';
 
+	// std::cout << "[";
 	vectorInsert.insert (it,2,300);
+	// std::cout << "]\n";
+
 
 	// "it" no longer valid, get a new one:
 	it = vectorInsert.begin();
 
-	// ft::vector<int> anothervector (2,400);
-	// vectorInsert.insert (it+2,anothervector.begin(),anothervector.end());
+	ft::vector<int> anothervector (2,400);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ,anothervector.end());
 
-	// int myarray [] = { 501,502,503 };
-	// vectorInsert.insert (vectorInsert.begin(), myarray, myarray+3);
+	int myarray [] = { 501,502,503 };
+	vectorInsert.insert (vectorInsert.begin(), myarray, myarray+3);
 
 	std::cout << "vectorInsert contains:";
 	for (it=vectorInsert.begin(); it<vectorInsert.end(); it++)
@@ -133,7 +149,7 @@ int	main()
 		std::cout << ' ' << foo1[i];
 	std::cout << '\n';
 
-	std::cout << "bar1 contains:";
+	std::cout << "frgergr contains:";
 	for (unsigned i=0; i<bar1.size(); i++)
 		std::cout << ' ' << bar1[i];
 	std::cout << '\n';
@@ -143,13 +159,13 @@ int	main()
 	ft::vector<int> newVector;
 
 	// set some values (from 1 to 10)
-	for (int i=1; i<=10; i++) newVector.push_back(i);
+	for (int i=1; i<=10000000; i++) newVector.push_back(i);
 
 	// erase the 6th element
-	newVector.erase (newVector.begin()+5);
+	// newVector.erase (newVector.begin()+3);
 
 	// erase the first 3 elements:
-	// newVector.erase (newVector.begin(),newVector.begin()+3);
+	newVector.erase (newVector.begin()+3,newVector.begin()+9999999);
 
 	std::cout << "newVector contains:";
 	for (unsigned i=0; i<newVector.size(); ++i)
