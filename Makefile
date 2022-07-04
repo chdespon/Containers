@@ -35,6 +35,14 @@ _WHITE=	$'\033[37m
 
 all: $(FT_NAME)
 
+test: $(FT_NAME) $(NAME)
+		@echo "Testing DIFF on $(_YELLOW)$(NAME)$(_WHITE) and $(_YELLOW)$(FT_NAME)$(_WHITE) ... \n"
+		@./$(NAME) > test1
+		@./$(FT_NAME) > test2
+		@diff --expand-tabs --ignore-tab-expansion --side-by-side --left-column test1 test2 || true
+		@rm test1 test2
+		@echo "$(_GREEN)DONE$(_WHITE)\n-----"
+
 show:
 				@echo "$(_BLUE)SRCS :\n$(_YELLOW)$(SRCS) $(_WHITE)"
 				@echo "$(_BLUE)SRCS_DIR :\n$(_YELLOW)$(SRCS_DIR) $(_WHITE)"
@@ -82,6 +90,7 @@ clean:
 				@echo -n "$(_WHITE)Deleting Objects Directory $(_YELLOW)$(OBJ_DIR)" \
 				"$(_WHITE) ... "
 				@rm -rf $(OBJ_DIR) $(FT_OBJ_DIR)
+				@rm -rf test1 test2
 				@echo "$(_GREEN)DONE$(_WHITE)\n-----"
 
 fclean:			clean
