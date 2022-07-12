@@ -6,15 +6,13 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:06:25 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/04 18:20:57 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/12 19:37:09 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONTAINER_VECTOR_HPP
 # define CONTAINER_VECTOR_HPP
 
-# include <vector>
-# include <iterator>
 # include <memory>
 # include <sstream>
 # include <exception>
@@ -84,7 +82,7 @@ namespace ft
 
 			// Copy constructor
 			vector(const vector& other)
-			:_allocator(other._allocator), _datas(NULL), _size(other._size), _capacity(other._capacity)
+			: _datas(NULL), _capacity(other._capacity), _size(other._size), _allocator(other._allocator)
 			{
 				_datas = _allocator.allocate(_capacity);
 				for (size_type i = 0; i < _size; ++i)
@@ -288,7 +286,7 @@ namespace ft
 				return (replace);
 			}
 
-			iterator erase(iterator first, iterator last)
+			iterator erase(iterator first, iterator last) //TODO erase do not segfault when last is to big
 			{
 				iterator it_return(first);
 				iterator it_end(end());

@@ -6,19 +6,19 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/07 18:09:21 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/27 15:05:42 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/05 15:45:52 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONTAINER_STACK_HPP
 #define CONTAINER_STACK_HPP
 
-# include <vector>
 # include <deque>
+# include "vector.hpp"
 
 namespace ft
 {
-	template <class T, class Container = std::vector<T> >
+	template <class T, class Container = ft::vector<T> >
 	class stack
 	{
 		public:

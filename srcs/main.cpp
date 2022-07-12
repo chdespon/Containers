@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/04 18:17:37 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/12 19:50:47 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,12 @@
 
 # if FT //CREATE A REAL STL EXAMPLE
 	// #include <map.hpp>
+	#include <red_black_tree.hpp>
 	# include <stack.hpp>
 	# include <vector.hpp>
+	# include <pair.hpp>
 # else
+	# include <utility>
 	# include <map>
 	# include <stack>
 	# include <vector>
@@ -168,7 +171,7 @@ int	main()
 	newVector.erase (newVector.begin()+3);
 
 	// erase the first 3 elements:
-	newVector.erase (newVector.begin()+3,newVector.begin()+9999999);
+	newVector.erase (newVector.begin(),newVector.begin()+9999999);
 
 	std::cout << "newVector contains:";
 	for (unsigned i=0; i<newVector.size(); ++i)
@@ -231,6 +234,66 @@ int	main()
 		for (ft::vector<int>::iterator it = bar.begin(); it!=bar.end(); ++it)
 			std::cout << ' ' << *it;
 		std::cout << '\n';
+	}
+	std::cout << '\n';
+	std::cout << '\n';
+
+	std::cout << "PAIR constructor TEST\n";
+	{
+		ft::pair <std::string,double> product1;                     // default constructor
+		ft::pair <std::string,double> product2 ("tomatoes",2.30);   // value init
+		ft::pair <std::string,double> product3 (product2);          // copy constructor
+
+		product1 = ft::make_pair(std::string("lightbulbs"),0.99);   // using make_pair (move)
+
+		product2.first = "shoes";                  // the type of first is string
+		product2.second = 39.90;                   // the type of second is double
+
+		std::cout << "The price of " << product1.first << " is $" << product1.second << '\n';
+		std::cout << "The price of " << product2.first << " is $" << product2.second << '\n';
+		std::cout << "The price of " << product3.first << " is $" << product3.second << '\n';
+	}
+	std::cout << '\n';
+	std::cout << '\n';
+
+	std::cout << "PAIR OPERATOR= TEST\n";
+	{
+		ft::pair <std::string,int> planet, homeplanet;
+
+		planet = ft::make_pair("Earth",6371);
+
+		homeplanet = planet;
+
+		std::cout << "Home planet: " << homeplanet.first << '\n';
+		std::cout << "Planet size: " << homeplanet.second << '\n';
+	}
+	std::cout << '\n';
+	std::cout << '\n';
+
+	std::cout << "PAIR RELATIONAL OPERATORS TEST\n";
+	{
+		ft::pair<int,char> foo (10,'z');
+		ft::pair<int,char> bar (90,'a');
+
+		if (foo==bar) std::cout << "foo and bar are equal\n";
+		if (foo!=bar) std::cout << "foo and bar are not equal\n";
+		if (foo< bar) std::cout << "foo is less than bar\n";
+		if (foo> bar) std::cout << "foo is greater than bar\n";
+		if (foo<=bar) std::cout << "foo is less than or equal to bar\n";
+		if (foo>=bar) std::cout << "foo is greater than or equal to bar\n";
+	}
+	std::cout << '\n';
+	std::cout << '\n';
+
+	std::cout << "RBTREE TEST\n";
+	{
+		ft::RBTree<int> tree;
+
+		tree.insert(7);
+		tree.insert(8);
+		tree.insert(9);
+		tree.insert(10);
+		tree.find(5);
 	}
 	return (0);
 }
