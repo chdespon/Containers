@@ -6,10 +6,11 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/12 19:50:47 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/16 19:02:50 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <time.h>
 #include <iostream>
 #include <string>
 #include <deque>
@@ -165,13 +166,13 @@ int	main()
 	ft::vector<int> newVector;
 
 	// set some values (from 1 to 10)
-	for (int i=1; i<=10000000; i++) newVector.push_back(i);
+	for (int i=1; i<=10; i++) newVector.push_back(i);
 
 	// erase the 6th element
 	newVector.erase (newVector.begin()+3);
 
 	// erase the first 3 elements:
-	newVector.erase (newVector.begin(),newVector.begin()+9999999);
+	newVector.erase (newVector.begin(),newVector.begin()+4);
 
 	std::cout << "newVector contains:";
 	for (unsigned i=0; i<newVector.size(); ++i)
@@ -238,11 +239,11 @@ int	main()
 	std::cout << '\n';
 	std::cout << '\n';
 
-	std::cout << "PAIR constructor TEST\n";
+	std::cout << "PAIR consinserttor TEST\n";
 	{
-		ft::pair <std::string,double> product1;                     // default constructor
+		ft::pair <std::string,double> product1;                     // default consinserttor
 		ft::pair <std::string,double> product2 ("tomatoes",2.30);   // value init
-		ft::pair <std::string,double> product3 (product2);          // copy constructor
+		ft::pair <std::string,double> product3 (product2);          // copy consinserttor
 
 		product1 = ft::make_pair(std::string("lightbulbs"),0.99);   // using make_pair (move)
 
@@ -282,18 +283,39 @@ int	main()
 		if (foo<=bar) std::cout << "foo is less than or equal to bar\n";
 		if (foo>=bar) std::cout << "foo is greater than or equal to bar\n";
 	}
-	std::cout << '\n';
-	std::cout << '\n';
+	// std::cout << '\n';
+	// std::cout << '\n';
 
-	std::cout << "RBTREE TEST\n";
-	{
-		ft::RBTree<int> tree;
+	// std::cout << "RBTREE TEST\n";
+	// {
+	// 	srand (time(NULL));
+	// 	ft::RBTree<int> tree;
+	// 	// int insert(0);
+	// 	// int nbInsert(0);
 
-		tree.insert(7);
-		tree.insert(8);
-		tree.insert(9);
-		tree.insert(10);
-		tree.find(5);
-	}
+	// 	// std::cout << "Enter the number of insert in the TREE\n";
+	// 	// // std::cin >> nbInsert;
+	// 	// for (int i = 0; i < 1000000; i++)
+	// 	// {
+	// 	// 	// std::cout << "Add on Tree\n\n";
+	// 	// 	// std::cin >> insert;
+	// 	// 	// tree.insert(insert);
+	// 	// 	tree.insert(rand() % 999999);
+	// 		// tree.printTree();
+	// 	// }
+	// 	// tree.insert(-1);
+	// 	// tree.printTree();
+	// 	std::string test;
+	// 	std::cout << "Add on Tree\n\n";
+	// 	while (std::getline(std::cin, test))
+	// 	{
+	// 		if (test.empty())
+	// 			break ;
+	// 		tree.insert(rand() % 500);
+	// 		tree.printTree();
+	// 		std::cout << "Add on Tree\n\n";
+	// 	}
+
+	// }
 	return (0);
 }

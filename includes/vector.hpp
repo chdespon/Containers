@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:06:25 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/12 19:37:09 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/16 18:50:23 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,15 +275,16 @@ namespace ft
 			{
 				iterator replace(position);
 				iterator it_end(end());
-
-				while (position + 1 != it_end)
-				{
-					*position = *(position + 1);
-					*position++;
-				}
-				_allocator.destroy(&*position);
+				_GLIBCXX_MOVE3(position + 1, end(), position);
+				// while (position + 1 != it_end)
+				// {
+				// 	*position = *(position + 1);
+				// 	*position++;
+				// }
+				// _allocator.destroy(&*position);
+				_allocator.destroy(&*(end()-1));
 				--_size;
-				return (replace);
+				return (position);
 			}
 
 			iterator erase(iterator first, iterator last) //TODO erase do not segfault when last is to big
@@ -291,9 +292,22 @@ namespace ft
 				iterator it_return(first);
 				iterator it_end(end());
 
-				while (last < it_end)
-					*first++ = *last++;
-				while (first < it_end)
+				// while (last < it_end)
+				// 	*first++ = *last++;
+				// if (last +1 == it_end)
+				// {
+				// 	_GLIBCXX_MOVE3(last, it_end, it_return);
+				// 	++first;
+				// 	while (first < last+1)
+				// 	{
+				// 		_allocator.destroy(&*first);
+				// 		++first;
+				// 		--_size;
+				// 	}
+				// 	return (it_return);
+				// }
+				_GLIBCXX_MOVE3(last, it_end, it_return);
+				while (first < last)
 				{
 					_allocator.destroy(&*first);
 					++first;
