@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/16 19:30:57 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/17 20:57:36 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,41 @@ struct Node
 		data = val;
 		left = right = parent = NULL;
 		color = RED;
+	}
+
+	Node *uncle()
+	{
+		// If no parent or grandparent, then no uncle
+		if (parent == NULL or parent->parent == NULL)
+			return (NULL);
+
+		if (parent->isOnLeft())
+			// uncle on right
+			return (parent->parent->right);
+		else
+			// uncle on left
+			return (parent->parent->left);
+	}
+
+	// check if node is left child of parent
+	bool isOnLeft() { return this == parent->left; }
+
+	// returns pointer to sibling
+	Node *sibling()
+	{
+		// sibling null if no parent
+		if (parent == NULL)
+			return (NULL);
+
+		if (isOnLeft())
+			return (parent->right);
+
+		return (parent->left);
+	}
+
+	 bool hasRedChild()
+	{
+		return ((left != NULL and left->color == RED) || (right != NULL and right->color == RED));
 	}
 };
 
@@ -182,8 +217,7 @@ namespace ft
 							ptr is right child of its parent
 							Left-rotation required */
 							rotateLeft(root, grand_parent_ptr);
-							std::swap(parent_ptr->color,
-									grand_parent_ptr->color);
+							std::swap(parent_ptr->color, grand_parent_ptr->color);
 							ptr = parent_ptr;
 						}
 					}
@@ -213,7 +247,125 @@ namespace ft
 			// 	return (root);
 			// }
 
-			void deleteNode(Node *v)
+			void	fixDoubleBlack(Node *x)
+			{
+				if (x == _root)
+				// Reached root
+					return ;
+
+				Node *sibling = x->sibling(), *parent = x->parent;
+				if (sibling == NULL)
+					// No sibiling, double black pushed up
+					fixDoubleBlack(parent);
+				else
+				{
+					if (sibling->color == RED)
+					{
+						// Sibling red
+						parent->color = RED;
+						sibling->color = BLACK;
+						if (sibling->isOnLeft())
+							// left case
+							rotateRight(_root, parent);
+						else
+						// right case
+							rotateLeft(_root, parent);
+						fixDoubleBlack(x);
+					}
+					else
+					{
+						// Sibling black
+						if (sibling->hasRedChild())
+						{
+							// at least 1 red children
+							if (sibling->left != NULL and sibling->left->color == RED)
+							{
+								if (sibling->isOnLeft())
+								{
+									// left left
+									sibling->left->color = sibling->color;
+									sibling->color = parent->color;
+									rotateRight(_root, parent);
+								}
+								else
+								{
+									// right left
+									sibling->left->color = parent->color;
+									rotateRight(_root, sibling);
+									rotateLeft(_root, parent);
+								}
+							}
+							else
+							{
+								if (sibling->isOnLeft())
+								{
+									// left right
+									sibling->right->color = parent->color;
+									rotateLeft(_root, sibling);
+									rotateRight(_root, parent);
+								}
+								else
+								{
+									// right right
+									sibling->right->color = sibling->color;
+									sibling->color = parent->color;
+									rotateLeft(_root, parent);
+								}
+							}
+							parent->color = BLACK;
+						}
+						else
+						{
+							// 2 black children
+							sibling->color = RED;
+							if (parent->color == BLACK)
+								fixDoubleBlack(parent);
+							else
+								parent->color = BLACK;
+						}
+					}
+				}
+			}
+
+			void	swapValues(Node *u, Node *v)
+			{
+				int temp;
+				temp = u->data;
+				u->data = v->data;
+				v->data = temp;
+			}
+
+			// find node that do not have a left child
+			// in the subtree of the given node
+			Node	*successor(Node *x)
+			{
+				Node *temp = x;
+
+				while (temp->left != NULL)
+					temp = temp->left;
+
+				return (temp);
+			}
+
+			// find node that replaces a deleted node in BST
+			Node	*BSTreplace(Node *x)
+			{
+				// when node have 2 children
+				if (x->left != NULL and x->right != NULL)
+					return (successor(x->right));
+
+				// when leaf
+				if (x->left == NULL and x->right == NULL)
+					return (NULL);
+
+				// when single child
+				if (x->left != NULL)
+					return (x->left);
+				else
+					return (x->right);
+			}
+
+			void	deleteNode(Node *v)
 			{
 				Node *u = BSTreplace(v);
 
@@ -224,22 +376,22 @@ namespace ft
 				if (u == NULL)
 				{
 					// u is NULL therefore v is leaf
-					if (v == root)
+					if (v == _root)
 						// v is root, making root null
-						root = NULL;
+						_root = NULL;
 					else
 					{
-						if (uvBlack)
 						// u and v both black
-						// v is leaf, fix double black at v
-						fixDoubleBlack(v);
-						else
-						{
-							// u or v is red
-							if (v->sibling() != NULL)
-								// sibling is not null, make it red"
-								v->sibling()->color = RED;
-						}
+						if (uvBlack)
+							// v is leaf, fix double black at v
+							fixDoubleBlack(v);
+						// u or v is red
+						else if (v->sibling() != NULL)
+							// sibling is not null, make it red"
+							v->sibling()->color = RED;
+						// {
+
+						// }
 
 						// delete v from the tree
 						if (v->isOnLeft())
@@ -247,19 +399,23 @@ namespace ft
 						else
 							parent->right = NULL;
 					}
-					delete v;
-					return;
+					_allocator.destroy(v);
+					_allocator.deallocate(v, 1);
+					--_size;
+					return ;
 				}
 
-				if (v->left == NULL or v->right == NULL)
+				if (v->left == NULL || v->right == NULL)
 				{
 					// v has 1 child
-					if (v == root)
+					if (v == _root)
 					{
 						// v is root, assign the value of u to v, and delete u
-						v->val = u->val;
+						v->data = u->data;
 						v->left = v->right = NULL;
-						delete u;
+						_allocator.destroy(u);
+						_allocator.deallocate(u, 1);
+						--_size;
 					}
 					else
 					{
@@ -268,7 +424,9 @@ namespace ft
 							parent->left = u;
 						else
 							parent->right = u;
-						delete v;
+						_allocator.destroy(v);
+						_allocator.deallocate(v, 1);
+						--_size;
 						u->parent = parent;
 						if (uvBlack)
 						// u and v both black, fix double black at u
@@ -277,7 +435,7 @@ namespace ft
 						// u or v red, color u black
 							u->color = BLACK;
 					}
-					return;
+					return ;
 				}
 
 				// v has 2 children, swap values with successor and recurse
@@ -335,6 +493,24 @@ namespace ft
 					fixViolation(_root, ptr);
 				}
 			}
+			void	deleteByval(int n)
+			{
+				if (_root == NULL)
+				{
+					// Tree is empty
+					std::cout << "Tree is empty" << std::endl;
+					return ;
+				}
+
+				Node *v = find(n);
+				if (v->data != n)
+				{
+					std::cout << "No node found to delete with value: " << n << std::endl;
+					return ;
+				}
+
+				deleteNode(v);
+			}
 
 			Node	*find(const T &n)
 			{
@@ -362,7 +538,9 @@ namespace ft
 				return (tmp);
 			}
 
-			void printTreeHelper(Node *root, int space)
+			size_t	size(void) {return (_size);}
+
+			void	printTreeHelper(Node *root, int space)
 			{
 				int i;
 
@@ -384,7 +562,7 @@ namespace ft
 					printTreeHelper(root->left, space);
 				}
 			}
-			void printTree()
+			void	printTree()
 			{
 				printTreeHelper(_root, 0);
 			}

@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/16 19:02:50 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/17 20:10:48 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,39 +283,57 @@ int	main()
 		if (foo<=bar) std::cout << "foo is less than or equal to bar\n";
 		if (foo>=bar) std::cout << "foo is greater than or equal to bar\n";
 	}
-	// std::cout << '\n';
-	// std::cout << '\n';
+	std::cout << '\n';
+	std::cout << '\n';
 
-	// std::cout << "RBTREE TEST\n";
-	// {
-	// 	srand (time(NULL));
-	// 	ft::RBTree<int> tree;
-	// 	// int insert(0);
-	// 	// int nbInsert(0);
+	std::cout << "RBTREE TEST\n";
+	{
+		srand (time(NULL));
+		ft::RBTree<int> tree;
+		// int insert(0);
+		// int nbInsert(0);
 
-	// 	// std::cout << "Enter the number of insert in the TREE\n";
-	// 	// // std::cin >> nbInsert;
-	// 	// for (int i = 0; i < 1000000; i++)
-	// 	// {
-	// 	// 	// std::cout << "Add on Tree\n\n";
-	// 	// 	// std::cin >> insert;
-	// 	// 	// tree.insert(insert);
-	// 	// 	tree.insert(rand() % 999999);
-	// 		// tree.printTree();
-	// 	// }
-	// 	// tree.insert(-1);
-	// 	// tree.printTree();
-	// 	std::string test;
-	// 	std::cout << "Add on Tree\n\n";
-	// 	while (std::getline(std::cin, test))
-	// 	{
-	// 		if (test.empty())
-	// 			break ;
-	// 		tree.insert(rand() % 500);
-	// 		tree.printTree();
-	// 		std::cout << "Add on Tree\n\n";
-	// 	}
+		// std::cout << "Enter the number of insert in the TREE\n";
+		// // std::cin >> nbInsert;
+		// for (int i = 0; i < 1000000; i++)
+		// {
+		// 	// std::cout << "Add on Tree\n\n";
+		// 	// std::cin >> insert;
+		// 	// tree.insert(insert);
+		// 	tree.insert(rand() % 999999);
+			// tree.printTree();
+		// }
+		// tree.insert(-1);
+		// tree.printTree();
+		std::string test;
+		std::cout << "Add on Tree\n\n";
+		while (std::getline(std::cin, test))
+		{
+			if (test.empty())
+				break ;
+			// tree.insert(rand() % 500);
+			tree.insert(std::atoi(test.c_str()));
+			tree.printTree();
+			std::cout << "Add on Tree\n\n";
+		}
+		std::cout << "delete on Tree\n\n";
+		while (std::getline(std::cin, test))
+		{
+			if (test.empty())
+				break ;
+			if (!test.compare("s"))
+			{
+				std::cout << "tree size = " << tree.size() << std::endl;
+				std::cout << "delete on Tree\n\n";
+			}
+			else
+			{
+				tree.deleteByval(std::atoi(test.c_str()));
+				tree.printTree();
+				std::cout << "delete on Tree\n\n";
+			}
+		}
 
-	// }
+	}
 	return (0);
 }
