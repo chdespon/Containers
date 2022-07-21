@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 15:24:34 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/11 14:58:31 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/20 14:37:59 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,19 @@
 # include <memory>
 # include "random_access_iterator.hpp"
 # include "reverse_iterator.hpp"
+# include "red_black_tree.hpp"
 
 namespace ft
 {
-	template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<pair<const Key, T> > >
+	template <class Key, class T, class Compare = std::less<Key>,
+		class Allocator = std::allocator<ft::pair<const Key, T> > >
 	class map
 	{
 		public:
 			// types:
 			typedef Key												key_type;
 			typedef T												mapped_type;
-			typedef pair<const Key, T>								value_type;
+			typedef ft::pair<const Key, T>							value_type;
 			typedef Compare											key_compare;
 			typedef Allocator										allocator_type;
 			typedef size_t											size_type;
@@ -43,6 +45,10 @@ namespace ft
 			typedef ft::reverse_iterator<iterator>					reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 
+		private:
+			typedef ft::RBTree<value_type, allocator_type>	RBTree_type;
+
+		public:
 			class value_compare: public binary_function<value_type,value_type,bool>
 			{
 				friend class map;
@@ -58,6 +64,7 @@ namespace ft
 
 		private:
 			Allocator	_allocator;
+			RBTree_type	_tree;
 
 		public:
 			// 23.3.1.1 construct/copy/destroy:
@@ -84,12 +91,16 @@ namespace ft
 			const_reverse_iterator rend() const;
 
 			// capacity:
-			bool empty() const;
-			size_type size() const;
-			size_type max_size() const;
+			bool empty() const {return (_tree.size() == 0);}
+			size_type size() const {return (_tree.size())}
+
+			size_type max_size() const {return (_allocator.max_size());}
 
 			// 23.3.1.2 element access:
-			T& operator[](const key_type& x);
+			T& operator[](const key_type& x)
+			{
+				return (insert(x));
+			}
 
 			// modifiers:
 			pair<iterator, bool> insert(const value_type& x);

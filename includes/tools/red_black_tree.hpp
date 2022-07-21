@@ -6,79 +6,30 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/17 20:57:36 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/21 18:57:16 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 # include <memory>
-
-enum Color {RED, BLACK};
-
-template<class T>
-struct Node
-{
-	T		data;
-	bool	color;
-	Node<T>	*left;
-	Node<T>	*right;
-	Node<T>	*parent;
-
-	// Constructor
-	Node(T val)
-	{
-		data = val;
-		left = right = parent = NULL;
-		color = RED;
-	}
-
-	Node *uncle()
-	{
-		// If no parent or grandparent, then no uncle
-		if (parent == NULL or parent->parent == NULL)
-			return (NULL);
-
-		if (parent->isOnLeft())
-			// uncle on right
-			return (parent->parent->right);
-		else
-			// uncle on left
-			return (parent->parent->left);
-	}
-
-	// check if node is left child of parent
-	bool isOnLeft() { return this == parent->left; }
-
-	// returns pointer to sibling
-	Node *sibling()
-	{
-		// sibling null if no parent
-		if (parent == NULL)
-			return (NULL);
-
-		if (isOnLeft())
-			return (parent->right);
-
-		return (parent->left);
-	}
-
-	 bool hasRedChild()
-	{
-		return ((left != NULL and left->color == RED) || (right != NULL and right->color == RED));
-	}
-};
+# include "Node.hpp"
+# include "pair.hpp"
+# include "RBTIterator.hpp"
 
 namespace ft
 {
-	template <class T, class Allocator = std::allocator<Node<T> > >
+	template <class T, class Compare = std::less<T>,
+		class Allocator = std::allocator<ft::Node<T> > >
 	class RBTree
 	{
 		public:
-			typedef Node<T>	Node;
+			typedef ft::Node<T>				Node;
+			typedef ft::RBTIterator<Node>	iterator;
 
 		private:
 			Node							*_root;
+			Node							*_sentinel; // dont now if is usefull yet check it later!!!
 			Allocator						_allocator;
 			typename Allocator::size_type	_size;
 
@@ -225,28 +176,6 @@ namespace ft
 				root->color = BLACK;
 			}
 
-			// Node	*BSTInsert(Node* root, Node *ptr)
-			// {
-			// 	/* If the tree is empty, return a new node */
-			// 	if (root == NULL)
-			// 		return (ptr);
-
-			// 	/* Otherwise, recur down the tree */
-			// 	if (ptr->data < root->data)
-			// 	{
-			// 		root->left  = BSTInsert(root->left, ptr);
-			// 		root->left->parent = root;
-			// 	}
-			// 	else if (ptr->data > root->data)
-			// 	{
-			// 		root->right = BSTInsert(root->right, ptr);
-			// 		root->right->parent = root;
-			// 	}
-
-			// 	/* return the (unchanged) node pointer */
-			// 	return (root);
-			// }
-
 			void	fixDoubleBlack(Node *x)
 			{
 				if (x == _root)
@@ -278,7 +207,7 @@ namespace ft
 						if (sibling->hasRedChild())
 						{
 							// at least 1 red children
-							if (sibling->left != NULL and sibling->left->color == RED)
+							if (sibling->left != NULL && sibling->left->color == RED)
 							{
 								if (sibling->isOnLeft())
 								{
@@ -347,15 +276,15 @@ namespace ft
 				return (temp);
 			}
 
-			// find node that replaces a deleted node in BST
-			Node	*BSTreplace(Node *x)
+			// find node that replaces a deleted node in RBTree
+			Node	*replace(Node *x)
 			{
 				// when node have 2 children
-				if (x->left != NULL and x->right != NULL)
+				if (x->left != NULL && x->right != NULL)
 					return (successor(x->right));
 
 				// when leaf
-				if (x->left == NULL and x->right == NULL)
+				if (x->left == NULL && x->right == NULL)
 					return (NULL);
 
 				// when single child
@@ -367,10 +296,10 @@ namespace ft
 
 			void	deleteNode(Node *v)
 			{
-				Node *u = BSTreplace(v);
+				Node *u = replace(v);
 
-				// True when u and v are both black
-				bool uvBlack = ((u == NULL or u->color == BLACK) and (v->color == BLACK));
+				// True when u && v are both black
+				bool uvBlack = ((u == NULL || u->color == BLACK) && (v->color == BLACK));
 				Node *parent = v->parent;
 
 				if (u == NULL)
@@ -381,7 +310,7 @@ namespace ft
 						_root = NULL;
 					else
 					{
-						// u and v both black
+						// u && v both black
 						if (uvBlack)
 							// v is leaf, fix double black at v
 							fixDoubleBlack(v);
@@ -451,18 +380,6 @@ namespace ft
 				_destroy_tree(_root);
 			}
 
-			// void	insert(const T &data)
-			// {
-			// 	Node *ptr = _allocator.allocate(1);
-			// 	_allocator.construct(Node) Node(data);
-
-			// 	// Do a normal BST insert
-			// 	_root = BSTInsert(_root, ptr);
-
-			// 	// fix Red Black Tree violations
-			// 	fixViolation(_root, ptr);
-			// }
-
 			void	insert(const T data)
 			{
 				if (_root == NULL)
@@ -493,23 +410,31 @@ namespace ft
 					fixViolation(_root, ptr);
 				}
 			}
-			void	deleteByval(int n)
+
+			void	erase(iterator position)
+			{
+				if (position != end())
+					deleteNode(position._node);
+			}
+
+			size_t	erase(const T& n)
 			{
 				if (_root == NULL)
 				{
 					// Tree is empty
 					std::cout << "Tree is empty" << std::endl;
-					return ;
+					return (0);
 				}
 
 				Node *v = find(n);
 				if (v->data != n)
 				{
 					std::cout << "No node found to delete with value: " << n << std::endl;
-					return ;
+					return (0);
 				}
 
 				deleteNode(v);
+				return (1);
 			}
 
 			Node	*find(const T &n)
@@ -562,9 +487,14 @@ namespace ft
 					printTreeHelper(root->left, space);
 				}
 			}
+
 			void	printTree()
 			{
 				printTreeHelper(_root, 0);
 			}
+			// Iterator
+			iterator	begin() {return (iterator(_root->getMostLeft()));}
+
+			iterator	end() {return (iterator(_root->getMostRight()->right));}
 	};
 }

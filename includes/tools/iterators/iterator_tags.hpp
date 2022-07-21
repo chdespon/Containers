@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 12:21:34 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/15 14:47:14 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/20 16:42:22 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,4 +21,5 @@ namespace ft
 	struct bidirectional_iterator_tag: public forward_iterator_tag {};
 	struct random_access_iterator_tag: public bidirectional_iterator_tag {};
 }
+
 #endif

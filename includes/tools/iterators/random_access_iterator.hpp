@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 14:46:16 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/16 17:27:57 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/07/20 17:13:39 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ namespace ft
 			random_access_iterator& operator+=(difference_type n)
 			{
 				current += n;
-				return ((*this));
+				return (*this);
 			}
 
 			random_access_iterator operator+(difference_type n) const {return (random_access_iterator(current + n));}
@@ -148,6 +148,5 @@ namespace ft
 		return (random_access_iterator<Iterator> (x.base() + n));
 	}
 }
-
 
 #endif
