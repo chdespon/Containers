@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:02:08 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/21 18:47:16 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/08/30 20:05:38 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,34 @@ namespace ft
 		Node<T>	*parent;
 
 		// Constructor
-		Node(T val)
+		Node(T const &val)
 		{
 			data = val;
 			left = right = parent = NULL;
 			color = RED;
+		}
+
+		Node(Node const &cpy) {*this = cpy;}
+
+		~Node() {}
+
+		Node	*root(Node *node)
+		{
+			if (node == NULL)
+				return (NULL);
+			while (node->parent != NULL)
+				node = node->parent;
+			return (node);
+		}
+
+		Node	*last(Node *node)
+		{
+			if (node == NULL)
+				return (NULL);
+			node = node->root(node);
+			if (node != NULL)
+				node = node->getMostRight();
+			return (node);
 		}
 
 		Node	*uncle()
@@ -76,13 +99,26 @@ namespace ft
 			return (res);
 		}
 
-		Node	*getMostLight()
+		Node	*getMostLeft()
 		{
 			Node *res = this;
 
 			while (res->left != NULL)
 				res = res->left;
 			return (res);
+		}
+
+		Node	&operator=(Node const& u)
+		{
+			if (this != &u)
+			{
+				data = u.data;
+				color = u.color;
+				left = u.left;
+				right = u.right;
+				parent = u.parent;
+			}
+			return (*this);
 		}
 	};
 }

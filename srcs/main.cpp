@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/21 18:23:55 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/08/31 18:19:53 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,7 +289,8 @@ int	main()
 	std::cout << "RBTREE TEST\n";
 	{
 		srand (time(NULL));
-		ft::RBTree<int, int> tree;
+		tree::RBTree<int, int> tree;
+		tree::RBTree<int, int>::iterator it;
 		// int insert(0);
 		// int nbInsert(0);
 
@@ -317,6 +318,12 @@ int	main()
 			std::cout << "Add on Tree\n\n";
 		}
 		std::cout << "delete on Tree\n\n";
+		tree.erase(tree.begin(), tree.end());
+		// it = tree.begin();
+		// tree.erase(it);
+		// it = tree.begin();
+		tree.printTree();
+
 		while (std::getline(std::cin, test))
 		{
 			if (test.empty())
@@ -333,7 +340,6 @@ int	main()
 				std::cout << "delete on Tree\n\n";
 			}
 		}
-
 	}
 	return (0);
 }

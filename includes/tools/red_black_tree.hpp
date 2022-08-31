@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/21 18:57:16 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/08/31 18:30:25 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include "pair.hpp"
 # include "RBTIterator.hpp"
 
-namespace ft
+namespace tree
 {
 	template <class T, class Compare = std::less<T>,
 		class Allocator = std::allocator<ft::Node<T> > >
@@ -29,7 +29,7 @@ namespace ft
 
 		private:
 			Node							*_root;
-			Node							*_sentinel; // dont now if is usefull yet check it later!!!
+			Node							*_limit; // dont now if is usefull yet check it later!!!
 			Allocator						_allocator;
 			typename Allocator::size_type	_size;
 
@@ -44,6 +44,22 @@ namespace ft
 				_allocator.destroy(node);
 				_allocator.deallocate(node, 1);
 				--_size;
+			}
+
+			Node	*_create_limit()
+			{
+				_limit =_allocator.allocate(1);
+				_allocator.construct(_limit, Node(0));
+				_limit->parent = _root;
+				_limit->left = NULL;
+				_limit->right = NULL;
+				_limit->color = BLACK;
+				return (_limit);
+			}
+
+			void	_update_limit()
+			{
+				_limit->parent = _root;
 			}
 
 		protected:
@@ -258,22 +274,22 @@ namespace ft
 
 			void	swapValues(Node *u, Node *v)
 			{
-				int temp;
-				temp = u->data;
+				int	tmp;
+
+				tmp = u->data;
 				u->data = v->data;
-				v->data = temp;
+				v->data = tmp;
 			}
 
 			// find node that do not have a left child
 			// in the subtree of the given node
 			Node	*successor(Node *x)
 			{
-				Node *temp = x;
+				Node *tmp = x;
 
-				while (temp->left != NULL)
-					temp = temp->left;
-
-				return (temp);
+				while (tmp->left != NULL)
+					tmp = tmp->left;
+				return (tmp);
 			}
 
 			// find node that replaces a deleted node in RBTree
@@ -339,11 +355,14 @@ namespace ft
 					// v has 1 child
 					if (v == _root)
 					{
-						// v is root, assign the value of u to v, and delete u
-						v->data = u->data;
-						v->left = v->right = NULL;
-						_allocator.destroy(u);
-						_allocator.deallocate(u, 1);
+						// v is root, delete v and make u root
+
+						u->color = BLACK;
+						u->parent = NULL;
+						u->left = u->right = NULL;
+						_root = u;
+						_allocator.destroy(v);
+						_allocator.deallocate(v, 1);
 						--_size;
 					}
 					else
@@ -353,6 +372,7 @@ namespace ft
 							parent->left = u;
 						else
 							parent->right = u;
+
 						_allocator.destroy(v);
 						_allocator.deallocate(v, 1);
 						--_size;
@@ -373,19 +393,26 @@ namespace ft
 			}
 
 		public:
-			RBTree():_root(NULL), _size(0) {}
+			RBTree(const Allocator& = Allocator())
+			:_root(NULL), _size(0)
+			{
+				_limit = _create_limit();
+			}
 
 			~RBTree()
 			{
 				_destroy_tree(_root);
+				_allocator.destroy(_limit);
+				_allocator.deallocate(_limit, 1);
 			}
 
+			// pair<iterator,bool>	insert(const T data)
 			void	insert(const T data)
 			{
 				if (_root == NULL)
 				{
 					Node *ptr =_allocator.allocate(1);
-					_allocator.construct(ptr, Node(data));
+					_allocator.construct(ptr, data);
 					++_size;
 
 					ptr->color = BLACK;
@@ -409,12 +436,16 @@ namespace ft
 						tmp->right = ptr;
 					fixViolation(_root, ptr);
 				}
+				_update_limit();
 			}
 
 			void	erase(iterator position)
 			{
 				if (position != end())
+				{
 					deleteNode(position._node);
+					_update_limit();
+				}
 			}
 
 			size_t	erase(const T& n)
@@ -423,18 +454,32 @@ namespace ft
 				{
 					// Tree is empty
 					std::cout << "Tree is empty" << std::endl;
-					return (0);
+					return (1);
 				}
 
 				Node *v = find(n);
 				if (v->data != n)
 				{
 					std::cout << "No node found to delete with value: " << n << std::endl;
-					return (0);
+					return (1);
 				}
 
 				deleteNode(v);
-				return (1);
+				_update_limit();
+				return (0);
+			}
+
+			void	erase(iterator first, iterator last)
+			{
+				iterator tmp;
+
+				while (first != last)
+				{
+					tmp = first;
+					++tmp;
+					erase(first);
+					first = tmp;
+				}
 			}
 
 			Node	*find(const T &n)
@@ -465,6 +510,8 @@ namespace ft
 
 			size_t	size(void) {return (_size);}
 
+			size_t	max_size(void) const {return (_allocator.max_size());}
+
 			void	printTreeHelper(Node *root, int space)
 			{
 				int i;
@@ -488,13 +535,10 @@ namespace ft
 				}
 			}
 
-			void	printTree()
-			{
-				printTreeHelper(_root, 0);
-			}
-			// Iterator
-			iterator	begin() {return (iterator(_root->getMostLeft()));}
+			void	printTree() {printTreeHelper(_root, 0);}
 
-			iterator	end() {return (iterator(_root->getMostRight()->right));}
+			// Iterator
+			iterator	begin() {return (_root == NULL) ? iterator(_limit, _limit) : iterator(_root->getMostLeft(), _limit);}
+			iterator	end() {return (iterator(_limit, _limit));}
 	};
 }
