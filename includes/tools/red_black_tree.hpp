@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/08/31 18:30:25 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/05 18:51:22 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,32 @@
 # include "Node.hpp"
 # include "pair.hpp"
 # include "RBTIterator.hpp"
+# include "reverse_iterator.hpp"
 
 namespace tree
 {
 	template <class T, class Compare = std::less<T>,
-		class Allocator = std::allocator<ft::Node<T> > >
+		class Allocator = std::allocator<T> >
 	class RBTree
 	{
 		public:
-			typedef ft::Node<T>				Node;
-			typedef ft::RBTIterator<Node>	iterator;
+			typedef T														value_type;
+			typedef ft::Node<value_type>												Node;
+			typedef ft::RBTIterator<Node>									iterator;
+			typedef ft::ConstRBTIterator<Node>								const_iterator;
+			typedef ft::reverse_iterator<iterator>							reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
+
+			typedef Allocator												allocator_type;
+			typedef typename allocator_type::template rebind<Node>::other	node_allocator_type;
+
 
 		private:
 			Node							*_root;
 			Node							*_limit; // dont now if is usefull yet check it later!!!
-			Allocator						_allocator;
 			typename Allocator::size_type	_size;
+			node_allocator_type				_allocator;
+
 
 			void	_destroy_tree(Node *node)
 			{
@@ -393,51 +403,7 @@ namespace tree
 			}
 
 		public:
-			RBTree(const Allocator& = Allocator())
-			:_root(NULL), _size(0)
-			{
-				_limit = _create_limit();
-			}
 
-			~RBTree()
-			{
-				_destroy_tree(_root);
-				_allocator.destroy(_limit);
-				_allocator.deallocate(_limit, 1);
-			}
-
-			// pair<iterator,bool>	insert(const T data)
-			void	insert(const T data)
-			{
-				if (_root == NULL)
-				{
-					Node *ptr =_allocator.allocate(1);
-					_allocator.construct(ptr, data);
-					++_size;
-
-					ptr->color = BLACK;
-					_root = ptr;
-					fixViolation(_root, ptr);
-				}
-				else
-				{
-					Node *tmp = find(data);
-					if (tmp->data == data)
-						return ;
-
-					Node *ptr =_allocator.allocate(1);
-					_allocator.construct(ptr, Node(data));
-					++_size;
-
-					ptr->parent = tmp;
-					if (data < tmp->data)
-						tmp->left = ptr;
-					else
-						tmp->right = ptr;
-					fixViolation(_root, ptr);
-				}
-				_update_limit();
-			}
 
 			void	erase(iterator position)
 			{
@@ -448,7 +414,7 @@ namespace tree
 				}
 			}
 
-			size_t	erase(const T& n)
+			size_t	erase(const value_type& n)
 			{
 				if (_root == NULL)
 				{
@@ -475,14 +441,14 @@ namespace tree
 
 				while (first != last)
 				{
-					tmp = first;
+					tmp = first;;
 					++tmp;
 					erase(first);
 					first = tmp;
 				}
 			}
 
-			Node	*find(const T &n)
+			Node	*find(const value_type &n)
 			{
 				Node *tmp = _root;
 
@@ -508,9 +474,6 @@ namespace tree
 				return (tmp);
 			}
 
-			size_t	size(void) {return (_size);}
-
-			size_t	max_size(void) const {return (_allocator.max_size());}
 
 			void	printTreeHelper(Node *root, int space)
 			{
@@ -537,8 +500,99 @@ namespace tree
 
 			void	printTree() {printTreeHelper(_root, 0);}
 
+			// Constructor
+			RBTree(const Allocator& = Allocator())
+			:_root(NULL), _size(0)
+			{
+				_limit = _create_limit();
+			}
+
+
+			RBTree(const RBTree &copy)
+			: _root(NULL), _size(0), _allocator(copy._allocator)
+			{
+				_limit = _create_limit();
+				insert(copy.begin(), copy.end());
+			}
+
+			RBTree	&operator=(const RBTree &other)
+			{
+				if (this != &other)
+				{
+					clear();
+					insert(other.begin(), other.end());
+				}
+				return *this;
+			}
+
+			~RBTree()
+			{
+				clear();
+				_allocator.destroy(_limit);
+				_allocator.deallocate(_limit, 1);
+			}
+
 			// Iterator
 			iterator	begin() {return (_root == NULL) ? iterator(_limit, _limit) : iterator(_root->getMostLeft(), _limit);}
+			const_iterator	begin() const {return (_root == NULL) ? const_iterator(_limit, _limit) : const_iterator(_root->getMostLeft(), _limit);}
 			iterator	end() {return (iterator(_limit, _limit));}
+			const_iterator	end() const {return (const_iterator(_limit, _limit));}
+			reverse_iterator	rbeging() {return (reverse_iterator(end()));}
+			const_reverse_iterator	rbeging() const {return (const_reverse_iterator(end()));}
+			reverse_iterator	rend() {return (reverse_iterator(begin()));}
+			const_reverse_iterator	rend() const {return (const_reverse_iterator(begin()));}
+
+			// Capacity
+			bool	empty() const {return (_root == NULL);}
+			size_t	size() const {return (_size);}
+			size_t	max_size() const {return (_allocator.max_size());}
+
+			// Modifiers
+			// void	insert(const value_type data)
+			ft::pair<iterator,bool>	insert(const value_type data)
+			{
+				ft::pair<iterator,bool> result;
+				if (_root == NULL)
+				{
+					Node *ptr =_allocator.allocate(1);
+					_allocator.construct(ptr, data);
+					++_size;
+
+					ptr->color = BLACK;
+					_root = ptr;
+					fixViolation(_root, ptr);
+				}
+				else
+				{
+					Node *tmp = find(data);
+					if (tmp->data == data)
+						return (result = ft::make_pair<iterator, bool>(iterator(find(data), _limit), false));
+
+					Node *ptr =_allocator.allocate(1);
+					_allocator.construct(ptr, Node(data));
+					++_size;
+
+					ptr->parent = tmp;
+					if (data < tmp->data)
+						tmp->left = ptr;
+					else
+						tmp->right = ptr;
+					fixViolation(_root, ptr);
+				}
+				_update_limit();
+				return (ft::make_pair<iterator, bool>(iterator(_root, _limit), true));
+			}
+
+			// iterator	insert(iterator position, const value_type& data)
+			// {
+			// 	iterator tmp;
+			// }
+
+			void	clear()
+			{
+				_destroy_tree(_root);
+				_root = NULL;
+				_update_limit();
+			}
 	};
 }

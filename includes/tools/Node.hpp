@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:02:08 by chdespon          #+#    #+#             */
-/*   Updated: 2022/08/30 20:05:38 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/01 15:57:18 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,16 @@ namespace ft
 				return (NULL);
 			while (node->parent != NULL)
 				node = node->parent;
+			return (node);
+		}
+
+		Node	*firt(Node *node)
+		{
+			if (node == NULL)
+				return (NULL);
+			node = node->root(node);
+			if (node != NULL)
+				node = node->getMostleft();
 			return (node);
 		}
 
