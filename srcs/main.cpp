@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/08/31 20:07:14 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/20 16:11:33 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,16 @@
 #include <string>
 #include <deque>
 #include <stdlib.h>
+#include "stack.cpp"
+#include "vector.cpp"
 
 # if FT //CREATE A REAL STL EXAMPLE
 	// #include <map.hpp>
-	#include <red_black_tree.hpp>
-	# include <stack.hpp>
-	# include <vector.hpp>
-	# include <pair.hpp>
+	#include "red_black_tree.hpp"
+	# include "stack.hpp"
+	# include "vector.hpp"
+	# include "pair.hpp"
+	# include "map.hpp"
 # else
 	# include <utility>
 	# include <map>
@@ -31,56 +34,20 @@
 
 # endif
 
+bool fncomp (char lhs, char rhs) {return (lhs<rhs);}
+
+struct classcomp
+{
+	bool operator() (const char& lhs, const char& rhs) const
+	{return lhs<rhs;}
+};
+
 int	main()
 {
 	std::cout << "STACK TEST\n";
-	ft::vector<int> b(15, 6);
-	std::cout << b[3] << "\n";
-	ft::stack<int>::value_type stack_int;
-
-	stack_int = 69;
-
-	std::cout << "The value_type is int = " << stack_int << std::endl;
-
-	ft::stack<int> s1;
-	s1.push(stack_int);
-	std::cout << "The element at the top of the stack is "
-			<< s1.top( ) << ".\n" << std::endl;
-
-	std::cout << '\n';
-	std::cout << '\n';
-
-	std::cout << "VECTOR CAPACITY TEST\n";
-	ft::vector<int>::size_type sz;
-
-	ft::vector<int> foo;
-	sz = foo.capacity();
-	std::cout << "making foo grow:\n";
-	for (int i=0; i<100; ++i)
-	{
-		foo.push_back(i);
-		if (sz!=foo.capacity())
-		{
-			sz = foo.capacity();
-			std::cout << "capacity changed: " << sz << '\n';
-		}
-	}
-
-	ft::vector<int> bar;
-	sz = bar.capacity();
-	bar.reserve(100);   // this is the only difference with foo above
-	std::cout << "making bar grow:\n";
-	for (int i=0; i<100; ++i)
-	{
-		bar.push_back(i);
-		if (sz!=bar.capacity())
-		{
-			sz = bar.capacity();
-			std::cout << "capacity changed: " << sz << "\n\n\n\n";
-		}
-	}
-
-	std::cout << "VECTROR CONTENT TEST\n";
+	stack_test();
+	std::cout << "\n\nVECTOR TEST\n";
+	vector_test();
 	ft::vector<int> myvector;
 
   // set some initial content:
@@ -285,61 +252,114 @@ int	main()
 	}
 	std::cout << '\n';
 	std::cout << '\n';
+	std::cout << "Map TEST\n";
 
-	std::cout << "RBTREE TEST\n";
 	{
-		srand (time(NULL));
-		tree::RBTree<int, int> tree;
-		tree::RBTree<int, int>::iterator it;
-		// int insert(0);
-		// int nbInsert(0);
+		ft::map<char,int> mymap;
 
-		// std::cout << "Enter the number of insert in the TREE\n";
-		// // std::cin >> nbInsert;
-		// for (int i = 0; i < 1000000; i++)
-		// {
-		// 	// std::cout << "Add on Tree\n\n";
-		// 	// std::cin >> insert;
-		// 	// tree.insert(insert);
-		// 	tree.insert(rand() % 999999);
-			// tree.printTree();
+		// first insert function version (single parameter):
+		// mymap.insert ( ft::pair<char,int>('a',100) );
+		// mymap.insert ( ft::pair<char,int>('z',200) );
+
+		// ft::pair<ft::map<char,int>::iterator,bool> ret;
+		// ret = mymap.insert ( ft::pair<char,int>('z',500) );
+		// if (ret.second==false) {
+		// 	std::cout << "element 'z' already existed";
+		// 	std::cout << " with a value of " << ret.first->second << '\n';
 		// }
-		// tree.insert(-1);
-		// tree.printTree();
-		std::string test;
-		std::cout << "Add on Tree\n\n";
-		while (std::getline(std::cin, test))
-		{
-			if (test.empty())
-				break ;
-			// tree.insert(rand() % 500);
-			tree.insert(std::atoi(test.c_str()));
-			tree.printTree();
-			std::cout << "Add on Tree\n\n";
-		}
-		std::cout << "delete on Tree\n\n";
-		tree.erase(tree.begin(), tree.end());
-		// it = tree.begin();
-		// tree.erase(it);
-		// it = tree.begin();
-		tree.printTree();
 
-		while (std::getline(std::cin, test))
-		{
-			if (test.empty())
-				break ;
-			if (!test.compare("s"))
-			{
-				std::cout << "tree size = " << tree.size() << std::endl;
-				std::cout << "delete on Tree\n\n";
-			}
-			else
-			{
-				tree.erase(std::atoi(test.c_str()));
-				tree.printTree();
-				std::cout << "delete on Tree\n\n";
-			}
-		}
+		// // second insert function version (with hint position):
+		// ft::map<char,int>::iterator it = mymap.begin();
+		// mymap.insert (it, ft::pair<char,int>('b',300));  // max efficiency inserting
+		// mymap.insert (it, ft::pair<char,int>('c',400));  // no max efficiency inserting
+
+		// // third insert function version (range insertion):
+		// ft::map<char,int> anothermap;
+		// anothermap.insert(mymap.begin(),mymap.find('c'));
+
+		// // showing contents:
+		// std::cout << "mymap contains:\n";
+		// for (it=mymap.begin(); it!=mymap.end(); ++it)
+		// 	std::cout << it->first << " => " << it->second << '\n';
+
+		// std::cout << "anothermap contains:\n";
+		// for (it=anothermap.begin(); it!=anothermap.end(); ++it)
+		// 	std::cout << it->first << " => " << it->second << '\n';
 	}
+
+	{
+		ft::map<char,int> first;
+
+		// first['a'] = 10;
+		// first['b'] = 30;
+		// first['c'] = 50;
+		// first['d'] = 70;
+
+		// ft::map<char,int> second (first.begin(),first.end());
+
+		// ft::map<char,int> third (second);
+
+		// ft::map<char,int,classcomp> fourth;                 // class as Compare
+
+		// bool(*fn_pt)(char,char) = fncomp;
+		// ft::map<char,int,bool(*)(char,char)> fifth (fn_pt); // function pointer as Compare
+	}
+
+	// std::cout << "RBTREE TEST\n";
+	// {
+	// 	srand (time(NULL));
+	// 	ft::RBTree<char, int> tree;
+	// 	ft::RBTree<int, int>::iterator it;
+	// 	// int insert(0);
+	// 	// int nbInsert(0);
+
+	// 	// std::cout << "Enter the number of insert in the TREE\n";
+	// 	// // std::cin >> nbInsert;
+	// 	// for (int i = 0; i < 1000000; i++)
+	// 	// {
+	// 	// 	// std::cout << "Add on Tree\n\n";
+	// 	// 	// std::cin >> insert;
+	// 	// 	// tree.insert(insert);
+	// 	// 	tree.insert(rand() % 999999);
+	// 		// tree.printTree();
+	// 	// }
+	// 	// tree.insert(-1);
+	// 	// tree.printTree();
+	// 	std::string test;
+	// 	std::cout << "Add on Tree\n\n";
+	// 	// tree.insert( ft::pair<char,int>('a',100).first );
+	// 	while (std::getline(std::cin, test))
+	// 	{
+	// 		if (test.empty())
+	// 			break ;
+	// 		// tree.insert(rand() % 500);
+	// 		tree.insert(std::atoi(test.c_str()));
+	// 		tree.printTree();
+	// 		std::cout << "Add on Tree\n\n";
+	// 	}
+	// 	std::cout << "delete on Tree\n\n";
+	// 	tree.erase(tree.begin(), tree.end());
+	// 	// it = tree.begin();
+	// 	// tree.erase(it);
+	// 	// it = tree.begin();
+	// 	tree.printTree();
+
+	// 	while (std::getline(std::cin, test))
+	// 	{
+	// 		if (test.empty())
+	// 			break ;
+	// 		if (!test.compare("s"))
+	// 		{
+	// 			std::cout << "tree size = " << tree.size() << std::endl;
+	// 			std::cout << "delete on Tree\n\n";
+	// 		}
+	// 		else
+	// 		{
+	// 			tree.erase(std::atoi(test.c_str()));
+	// 			tree.printTree();
+	// 			std::cout << "delete on Tree\n\n";
+	// 		}
+	// 	}
+	// }
 	return (0);
 }

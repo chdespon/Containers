@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:06:25 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/20 14:38:07 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/20 18:15:33 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ namespace ft
 				const Allocator& = Allocator())
 			{
 				size_type n = 0;
-				for (InputIterator it = first; it != last; ++it, ++n)
+				for (InputIterator it = first; it != last; ++it)
+					++n;
 
 				_capacity = n;
 				_size = n;
@@ -84,7 +85,7 @@ namespace ft
 			vector(const vector& other)
 			: _datas(NULL), _capacity(other._capacity), _size(other._size), _allocator(other._allocator)
 			{
-				_datas = _allocator.allocate(_capacity);
+				_datas = _allocator.allocate(_size);
 				for (size_type i = 0; i < _size; ++i)
 					_allocator.construct(&_datas[i], other._datas[i]);
 			}
@@ -95,13 +96,19 @@ namespace ft
 				_allocator.deallocate(_datas, _capacity);
 			}
 
-			vector<T,Allocator>& operator=(const vector<T,Allocator>& x);
+			vector<T,Allocator>& operator=(const vector<T,Allocator>& x)
+			{
+				if (this != &x)
+					assign(x.begin(), x.end());
+				return (*this);
+			}
 
 			template <class InputIterator>
 			void assign(InputIterator first, typename ft::enable_if<!is_integral<InputIterator>::value, InputIterator>::type last)
 			{
 				size_type n = 0;
-				for (InputIterator it = first; it != last; ++it, ++n)
+				for (InputIterator it = first; it != last; ++it)
+					++n;
 
 				clear();
 				reserve(n);
@@ -260,7 +267,8 @@ namespace ft
 			{
 				size_type n = 0;
 				size_type pos = position - begin();
-				for (InputIterator it = first; it != last; ++it, ++n)
+				for (InputIterator it = first; it != last; ++it)
+					++n;
 				if (_size + n > _capacity * 2)
 					reserve(_size + n);
 				 else if (_size + n > _capacity)
@@ -328,6 +336,7 @@ namespace ft
 				for (size_type i = 0; i < _size; ++i)
 					_allocator.destroy(&_datas[i]);
 				_size = 0;
+				std::cout << "ici\n";
 			}
 	};
 

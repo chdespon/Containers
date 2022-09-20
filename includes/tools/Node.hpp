@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:02:08 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/01 15:57:18 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/14 15:07:02 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ namespace ft
 	template<class T>
 	struct Node
 	{
+		typedef T	value_type;
+
 		T		data;
 		bool	color;
 		Node<T>	*left;
@@ -25,6 +27,8 @@ namespace ft
 		Node<T>	*parent;
 
 		// Constructor
+		Node(): data(), color(RED), left(NULL), right(NULL), parent(NULL) {}
+
 		Node(T const &val)
 		{
 			data = val;
@@ -32,7 +36,9 @@ namespace ft
 			color = RED;
 		}
 
-		Node(Node const &cpy) {*this = cpy;}
+		Node(Node const &cpy)
+		: data(cpy.data), color(cpy.color), left(cpy.left), right(cpy.right), parent(cpy.parent)
+		{}
 
 		~Node() {}
 
@@ -45,7 +51,7 @@ namespace ft
 			return (node);
 		}
 
-		Node	*firt(Node *node)
+		Node	*first(Node *node)
 		{
 			if (node == NULL)
 				return (NULL);

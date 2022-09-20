@@ -6,31 +6,32 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:06:25 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/01 15:58:06 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/14 15:08:54 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-# include "Node.hpp"
 # include "iterator.hpp"
 # include "iterator_tags.hpp"
 
 namespace ft
 {
-	template<class T>
-	class RBTIterator: public iterator<bidirectional_iterator_tag, T>
+	template<class I>
+	class RBTIterator: public ft::iterator<bidirectional_iterator_tag, I>
 	{
 		public:
-			typedef T	Node;
+			typedef I	Node;
 			Node		*_node;
 			Node		*_limit;
 
-			typedef typename ft::iterator<bidirectional_iterator_tag, T>::value_type		value_type;
-			typedef typename ft::iterator<bidirectional_iterator_tag, T>::difference_type	difference_type;
-			typedef typename ft::iterator<bidirectional_iterator_tag, T>::pointer			pointer;
-			typedef typename ft::iterator<bidirectional_iterator_tag, T>::reference			reference;
-			typedef typename ft::iterator<bidirectional_iterator_tag, T>::iterator_category	iterator_category;
+			typedef ft::bidirectional_iterator_tag	iterator_category;
+			typedef I								value_type;
+			typedef std::ptrdiff_t					difference_type;
+			typedef I *								pointer;
+			typedef I &								reference;
+			typedef typename I::value_type*			value_pointer;
+			typedef typename I::value_type&			value_reference;
 
 			RBTIterator(void): _node(NULL), _limit(NULL) {}
 			explicit RBTIterator(Node * n, Node *limit): _node(n), _limit(limit) {}
@@ -50,16 +51,18 @@ namespace ft
 				return (*this);
 			}
 
-			operator	RBTIterator<const T>(void)
+			operator	RBTIterator<const I>(void)
 			{
-				return (RBTIterator<const T>(_node));
+				return (RBTIterator<const I>(_node));
 			}
 
-			RBTIterator	base() {return (_node);} // explicit
+			pointer	base() {return (_node);} // explicit
 
-			reference	operator*() {return *(_node);}
+			value_reference	operator*() const {return (_node->data);}
 
-			pointer	operator->() const {return (&(operator*()));}
+			value_pointer	operator->() {return (&(operator*()));}
+
+			const value_pointer	operator->() const {return (&(operator*()));}
 
 			RBTIterator	&operator++()
 			{
@@ -124,7 +127,7 @@ namespace ft
 					return (*this);
 				}
 				_node = p;
-				
+
 				if (_node->left != NULL)
 				{
 					_node = _node->left;
@@ -162,14 +165,14 @@ namespace ft
 			}
 	};
 
-	template <class T>
-	bool	operator==(RBTIterator<T> const &x, RBTIterator<T> const &y)
+	template <class I>
+	bool	operator==(RBTIterator<I> const &x, RBTIterator<I> const &y)
 	{
 		return (x.base() == y.base());
 	}
 
-	// template <class T>
-	// bool	operator!=(RBTIterator<T> &x, RBTIterator<T> &y)
+	// template <class I>
+	// bool	operator!=(RBTIterator<I> &x, RBTIterator<I> &y)
 	// {
 	// 	return (x.base() != y.base());
 	// }

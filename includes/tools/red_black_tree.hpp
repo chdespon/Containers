@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/05 18:51:22 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/19 19:02:25 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,10 @@
 # include "pair.hpp"
 # include "RBTIterator.hpp"
 # include "reverse_iterator.hpp"
+# include "is_integral.hpp"
+# include "enable_if.hpp"
 
-namespace tree
+namespace ft
 {
 	template <class T, class Compare = std::less<T>,
 		class Allocator = std::allocator<T> >
@@ -26,7 +28,7 @@ namespace tree
 	{
 		public:
 			typedef T														value_type;
-			typedef ft::Node<value_type>												Node;
+			typedef ft::Node<value_type>									Node;
 			typedef ft::RBTIterator<Node>									iterator;
 			typedef ft::ConstRBTIterator<Node>								const_iterator;
 			typedef ft::reverse_iterator<iterator>							reverse_iterator;
@@ -58,8 +60,8 @@ namespace tree
 
 			Node	*_create_limit()
 			{
-				_limit =_allocator.allocate(1);
-				_allocator.construct(_limit, Node(0));
+				_limit = _allocator.allocate(1);
+				_allocator.construct(_limit, Node());
 				_limit->parent = _root;
 				_limit->left = NULL;
 				_limit->right = NULL;
@@ -402,79 +404,6 @@ namespace tree
 				deleteNode(u);
 			}
 
-		public:
-
-
-			void	erase(iterator position)
-			{
-				if (position != end())
-				{
-					deleteNode(position._node);
-					_update_limit();
-				}
-			}
-
-			size_t	erase(const value_type& n)
-			{
-				if (_root == NULL)
-				{
-					// Tree is empty
-					std::cout << "Tree is empty" << std::endl;
-					return (1);
-				}
-
-				Node *v = find(n);
-				if (v->data != n)
-				{
-					std::cout << "No node found to delete with value: " << n << std::endl;
-					return (1);
-				}
-
-				deleteNode(v);
-				_update_limit();
-				return (0);
-			}
-
-			void	erase(iterator first, iterator last)
-			{
-				iterator tmp;
-
-				while (first != last)
-				{
-					tmp = first;;
-					++tmp;
-					erase(first);
-					first = tmp;
-				}
-			}
-
-			Node	*find(const value_type &n)
-			{
-				Node *tmp = _root;
-
-				while (tmp != NULL)
-				{
-					if (n < tmp->data)
-					{
-						if (tmp->left == NULL)
-							break ;
-						else
-							tmp = tmp->left;
-					}
-					else if (n == tmp->data)
-						break ;
-					else
-					{
-						if (tmp->right == NULL)
-							break ;
-						else
-							tmp = tmp->right;
-					}
-				}
-				return (tmp);
-			}
-
-
 			void	printTreeHelper(Node *root, int space)
 			{
 				int i;
@@ -498,15 +427,44 @@ namespace tree
 				}
 			}
 
+		public:
 			void	printTree() {printTreeHelper(_root, 0);}
 
+			Node	*find(const value_type &n)
+			{
+				Node *tmp = _root;
+
+				if (tmp == NULL)
+					return (_limit);
+
+				while (tmp != NULL)
+				{
+					if (n < tmp->data)
+					{
+						if (tmp->left == NULL)
+							break ;
+						else
+							tmp = tmp->left;
+					}
+					else if (n == tmp->data)
+						break ;
+					else
+					{
+						if (tmp->right == NULL)
+							break ;
+						else
+							tmp = tmp->right;
+					}
+				}
+				return (tmp);
+			}
+
 			// Constructor
-			RBTree(const Allocator& = Allocator())
-			:_root(NULL), _size(0)
+			RBTree(const allocator_type & alloc = allocator_type())
+			:_root(NULL), _size(0), _allocator(alloc)
 			{
 				_limit = _create_limit();
 			}
-
 
 			RBTree(const RBTree &copy)
 			: _root(NULL), _size(0), _allocator(copy._allocator)
@@ -537,8 +495,8 @@ namespace tree
 			const_iterator	begin() const {return (_root == NULL) ? const_iterator(_limit, _limit) : const_iterator(_root->getMostLeft(), _limit);}
 			iterator	end() {return (iterator(_limit, _limit));}
 			const_iterator	end() const {return (const_iterator(_limit, _limit));}
-			reverse_iterator	rbeging() {return (reverse_iterator(end()));}
-			const_reverse_iterator	rbeging() const {return (const_reverse_iterator(end()));}
+			reverse_iterator	rbegin() {return (reverse_iterator(end()));}
+			const_reverse_iterator	rbegin() const {return (const_reverse_iterator(end()));}
 			reverse_iterator	rend() {return (reverse_iterator(begin()));}
 			const_reverse_iterator	rend() const {return (const_reverse_iterator(begin()));}
 
@@ -549,15 +507,13 @@ namespace tree
 
 			// Modifiers
 			// void	insert(const value_type data)
-			ft::pair<iterator,bool>	insert(const value_type data)
+			ft::pair<iterator,bool>	insert(const value_type& data)
 			{
-				ft::pair<iterator,bool> result;
 				if (_root == NULL)
 				{
 					Node *ptr =_allocator.allocate(1);
 					_allocator.construct(ptr, data);
 					++_size;
-
 					ptr->color = BLACK;
 					_root = ptr;
 					fixViolation(_root, ptr);
@@ -566,12 +522,11 @@ namespace tree
 				{
 					Node *tmp = find(data);
 					if (tmp->data == data)
-						return (result = ft::make_pair<iterator, bool>(iterator(find(data), _limit), false));
+						return (ft::make_pair<iterator, bool>(iterator(find(data), _limit), false));
 
 					Node *ptr =_allocator.allocate(1);
-					_allocator.construct(ptr, Node(data));
+					_allocator.construct(ptr, data);
 					++_size;
-
 					ptr->parent = tmp;
 					if (data < tmp->data)
 						tmp->left = ptr;
@@ -583,10 +538,75 @@ namespace tree
 				return (ft::make_pair<iterator, bool>(iterator(_root, _limit), true));
 			}
 
-			// iterator	insert(iterator position, const value_type& data)
+			// iterator	insert(iterator position, const value_type &data)
 			// {
-			// 	iterator tmp;
+			// 	if (position != end())
+			// 	{
+			// 		iterator next = position;
+			// 		++next;
+			// 		if (position._node->data < data && (next == end() || next._node->data < data))
+			// 		{
+			// 			if (position._node->parent == next._node || next == end())
+			// 			{
+			// 				position._node->_right = _allocator.allocate(1);
+			// 				_allocator.construct(position._node->_right, data);
+			// 				++_size;
+			// 				position._node->_right->_parent = position._node;
+			// 			}
+			// 			else
+			// 			{
+			// 				next._node
+			// 			}
+
+			// 		}
+			// 	}
 			// }
+
+			template < typename InputIterator >
+			void insert(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = NULL )
+			{
+				while (first != last)
+				{
+					insert(first._node->data);
+					++first;
+				}
+			}
+
+			void	erase(iterator position)
+			{
+				if (position != end())
+				{
+					deleteNode(position._node);
+					_update_limit();
+				}
+			}
+
+			size_t	erase(const value_type& n)
+			{
+				if (_root == NULL)// Tree is empty
+					return (0);
+
+				Node *v = find(n);
+				if (v->data != n)
+					return (0);
+
+				deleteNode(v);
+				_update_limit();
+				return (1);
+			}
+
+			void	erase(iterator first, iterator last)
+			{
+				iterator tmp;
+
+				while (first != last)
+				{
+					tmp = first;;
+					++tmp;
+					erase(first);
+					first = tmp;
+				}
+			}
 
 			void	clear()
 			{
@@ -594,5 +614,22 @@ namespace tree
 				_root = NULL;
 				_update_limit();
 			}
+
+			// observers:
+			// key_compare key_comp() const;
+			// value_compare value_comp() const;
+
+			// 23.3.1.3 map operations:
+			// iterator find(const key_type& x);
+			// const_iterator find(const key_type& x) const;
+			// size_type count(const key_type& x) const;
+			// iterator lower_bound(const key_type& x);
+			// const_iterator lower_bound(const key_type& x) const;
+			// iterator upper_bound(const key_type& x);
+			// const_iterator upper_bound(const key_type& x) const;
+			// ft::pair<iterator,iterator>
+			// equal_range(const key_type& x);
+			// ft::pair<const_iterator,const_iterator>
+			// equal_range(const key_type& x) const;
 	};
 }
