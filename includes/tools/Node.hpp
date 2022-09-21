@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:02:08 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/14 15:07:02 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/21 15:08:55 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,8 @@ namespace ft
 		// Constructor
 		Node(): data(), color(RED), left(NULL), right(NULL), parent(NULL) {}
 
-		Node(T const &val)
+		Node(T const &val): data(val)
 		{
-			data = val;
 			left = right = parent = NULL;
 			color = RED;
 		}

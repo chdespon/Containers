@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/19 19:02:25 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/21 15:07:00 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -512,7 +512,7 @@ namespace ft
 				if (_root == NULL)
 				{
 					Node *ptr =_allocator.allocate(1);
-					_allocator.construct(ptr, data);
+					_allocator.construct(ptr, Node(data));
 					++_size;
 					ptr->color = BLACK;
 					_root = ptr;

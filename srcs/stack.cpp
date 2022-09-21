@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 14:55:54 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/20 15:26:30 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/21 16:58:31 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 #include <stdlib.h>
 
 # if FT //CREATE A REAL STL EXAMPLE
-	// #include <map.hpp>
-	#include "red_black_tree.hpp"
 	# include "stack.hpp"
 	# include "vector.hpp"
 	# include "pair.hpp"

@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:06:25 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/20 18:15:33 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/21 15:10:37 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -336,7 +336,6 @@ namespace ft
 				for (size_type i = 0; i < _size; ++i)
 					_allocator.destroy(&_datas[i]);
 				_size = 0;
-				std::cout << "ici\n";
 			}
 	};
 

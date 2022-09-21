@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 15:28:48 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/20 18:06:12 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/21 16:58:26 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 #include <stdlib.h>
 
 # if FT //CREATE A REAL STL EXAMPLE
-	// #include <map.hpp>
-	#include "red_black_tree.hpp"
 	# include "stack.hpp"
 	# include "vector.hpp"
 	# include "pair.hpp"
@@ -426,5 +424,4 @@ void	vector_test(void)
 		if (foo<=bar) std::cout << "foo is less than or equal to bar\n";
 		if (foo>=bar) std::cout << "foo is greater than or equal to bar\n";
 	}
-
 }
