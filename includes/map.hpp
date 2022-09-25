@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 15:24:34 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/21 18:36:19 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/23 16:47:48 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,10 +152,10 @@ namespace ft
 
 			// void swap(map<Key,T,Compare,Allocator>&);
 
-			// void clear()
-			// {
-			// 	_tree.clear();
-			// }
+			void clear()
+			{
+				_tree.clear();
+			}
 
 			// // observers:
 			// key_compare key_comp() const;
@@ -164,9 +164,14 @@ namespace ft
 			// // 23.3.1.3 map operations:
 			// iterator find(const key_type& x)
 			// {
-			// 	return (iterator(_tree.find(x), _tree._limit));
+			// 	return (_tree.find(x), _tree._limit);
 			// }
-			const_iterator find(const key_type& x) const;
+
+			// const_iterator find(const key_type& x) const
+			// {
+			// 	return (_tree.find(x), _tree._limit);
+			// }
+
 			size_type count(const key_type& x) const;
 			iterator lower_bound(const key_type& x);
 			const_iterator lower_bound(const key_type& x) const;

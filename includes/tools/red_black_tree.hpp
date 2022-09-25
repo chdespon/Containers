@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/21 15:07:00 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/23 16:47:29 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ namespace ft
 
 		private:
 			Node							*_root;
-			Node							*_limit; // dont now if is usefull yet check it later!!!
+			Node							*_limit;
 			typename Allocator::size_type	_size;
 			node_allocator_type				_allocator;
 
@@ -491,14 +491,14 @@ namespace ft
 			}
 
 			// Iterator
-			iterator	begin() {return (_root == NULL) ? iterator(_limit, _limit) : iterator(_root->getMostLeft(), _limit);}
-			const_iterator	begin() const {return (_root == NULL) ? const_iterator(_limit, _limit) : const_iterator(_root->getMostLeft(), _limit);}
-			iterator	end() {return (iterator(_limit, _limit));}
-			const_iterator	end() const {return (const_iterator(_limit, _limit));}
-			reverse_iterator	rbegin() {return (reverse_iterator(end()));}
-			const_reverse_iterator	rbegin() const {return (const_reverse_iterator(end()));}
-			reverse_iterator	rend() {return (reverse_iterator(begin()));}
-			const_reverse_iterator	rend() const {return (const_reverse_iterator(begin()));}
+			iterator begin() {return (_root == NULL) ? iterator(_limit, _limit) : iterator(_root->getMostLeft(), _limit);}
+			const_iterator begin() const {return (_root == NULL) ? const_iterator(_limit, _limit) : const_iterator(_root->getMostLeft(), _limit);}
+			iterator end() {return (iterator(_limit, _limit));}
+			const_iterator end() const {return (const_iterator(_limit, _limit));}
+			reverse_iterator rbegin() {return (reverse_iterator(end()));}
+			const_reverse_iterator rbegin() const {return (const_reverse_iterator(end()));}
+			reverse_iterator rend() {return (reverse_iterator(begin()));}
+			const_reverse_iterator rend() const {return (const_reverse_iterator(begin()));}
 
 			// Capacity
 			bool	empty() const {return (_root == NULL);}
