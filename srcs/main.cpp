@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/21 16:57:49 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/28 15:02:22 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ int	main()
 	// std::cout << "RBTREE TEST\n";
 	// {
 	// 	srand (time(NULL));
-	// 	ft::RBTree<char, int> tree;
-	// 	ft::RBTree<int, int>::iterator it;
+	// 	ft::map<int, int> tree;
+	// 	ft::map<int, int>::iterator it;
 	// 	// int insert(0);
 	// 	// int nbInsert(0);
 
@@ -71,16 +71,18 @@ int	main()
 	// 		if (test.empty())
 	// 			break ;
 	// 		// tree.insert(rand() % 500);
-	// 		tree.insert(std::atoi(test.c_str()));
-	// 		tree.printTree();
+	// 		tree.insert( ft::pair<int,int>(std::atoi(test.c_str()),100));
+
+	// 		// tree.insert(std::atoi(test.c_str()));
+	// 		// tree.printTree();
 	// 		std::cout << "Add on Tree\n\n";
 	// 	}
 	// 	std::cout << "delete on Tree\n\n";
-	// 	tree.erase(tree.begin(), tree.end());
+	// 	// tree.erase(tree.begin(), tree.end());
 	// 	// it = tree.begin();
 	// 	// tree.erase(it);
 	// 	// it = tree.begin();
-	// 	tree.printTree();
+	// 	// tree.printTree();
 
 	// 	while (std::getline(std::cin, test))
 	// 	{
@@ -93,8 +95,9 @@ int	main()
 	// 		}
 	// 		else
 	// 		{
+	// 			// tree.erase(ft::pair<int,int>(std::atoi(test.c_str()),100).first);
 	// 			tree.erase(std::atoi(test.c_str()));
-	// 			tree.printTree();
+	// 			// tree.printTree();
 	// 			std::cout << "delete on Tree\n\n";
 	// 		}
 	// 	}

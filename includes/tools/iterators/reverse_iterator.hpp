@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 12:57:49 by chdespon          #+#    #+#             */
-/*   Updated: 2022/06/16 14:59:02 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/26 13:31:47 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ namespace ft
 			reference operator*() const
 			{
 				Iterator tmp = current;
-				return (*--tmp);
+				return *(--tmp);
 			}
 
 			pointer operator->() const {return (&(operator*()));}
@@ -78,7 +78,9 @@ namespace ft
 			}
 
 			reverse_iterator operator+ (difference_type n) const
-			{return (reverse_iterator(current - n));}
+			{
+				return (reverse_iterator(current - n));
+			}
 
 			reverse_iterator& operator+=(difference_type n)
 			{
@@ -87,7 +89,9 @@ namespace ft
 			}
 
 			reverse_iterator operator- (difference_type n) const
-			{return (reverse_iterator(current + n));}
+			{
+				return (reverse_iterator(current + n));
+			}
 
 			reverse_iterator& operator-=(difference_type n)
 			{

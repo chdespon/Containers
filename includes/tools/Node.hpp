@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:02:08 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/21 15:08:55 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/29 18:55:49 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,19 @@ namespace ft
 		: data(cpy.data), color(cpy.color), left(cpy.left), right(cpy.right), parent(cpy.parent)
 		{}
 
+		// Node &operator=(const Node &node)
+		// {
+		// 	if (this != &node)
+		// 	{
+		// 		data = node.data;
+		// 		color = node.color;
+		// 		left = node.left;
+		// 		right = node.right;
+		// 		parent = node.parent;
+		// 	}
+		// 	return (*this);
+		// }
+
 		~Node() {}
 
 		Node	*root(Node *node)
@@ -47,26 +60,6 @@ namespace ft
 				return (NULL);
 			while (node->parent != NULL)
 				node = node->parent;
-			return (node);
-		}
-
-		Node	*first(Node *node)
-		{
-			if (node == NULL)
-				return (NULL);
-			node = node->root(node);
-			if (node != NULL)
-				node = node->getMostleft();
-			return (node);
-		}
-
-		Node	*last(Node *node)
-		{
-			if (node == NULL)
-				return (NULL);
-			node = node->root(node);
-			if (node != NULL)
-				node = node->getMostRight();
 			return (node);
 		}
 
@@ -112,6 +105,26 @@ namespace ft
 			while (res->right != NULL)
 				res = res->right;
 			return (res);
+		}
+
+		Node	*first(Node *node)
+		{
+			if (node == NULL)
+				return (NULL);
+			node = node->root(node);
+			if (node != NULL)
+				node = node->getMostleft();
+			return (node);
+		}
+
+		Node	*last(Node *node)
+		{
+			if (node == NULL)
+				return (NULL);
+			node = node->root(node);
+			if (node != NULL)
+				node = node->getMostRight();
+			return (node);
 		}
 
 		Node	*getMostLeft()

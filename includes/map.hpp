@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 15:24:34 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/23 16:47:48 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/29 19:39:25 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ namespace ft
 
 		public:
 			// 23.3.1.1 construct/copy/destroy:
-			explicit map (const key_compare & comp = key_compare(), const allocator_type & alloc = allocator_type())
+			explicit map (const Compare& comp = Compare(), const allocator_type & alloc = allocator_type())
 			: _tree(), _allocator(alloc), _comp(comp) {}
 
 			template <class InputIterator>
@@ -88,11 +88,12 @@ namespace ft
 
 			map& operator=(const map& x)
 			{
-				if (this != x)
+				if (this != &x)
 				{
 					_tree.clear();
 					insert(x.begin(), x.end());
 				}
+				return (*this);
 			}
 
 			// iterators:
@@ -113,6 +114,9 @@ namespace ft
 			// 23.3.1.2 element access:
 			mapped_type& operator[](const key_type& key)
 			{
+				static int i =1;
+				std::cout << i++ << std::endl;
+				std::cout << ft::make_pair(key,mapped_type()).second << std::endl;
 				// return (insert(ft::make_pair(key, mapped_type())).first);
 				return ((*((insert(ft::make_pair(key,mapped_type()))).first)).second);
 			}
@@ -142,7 +146,7 @@ namespace ft
 
 			size_type erase(const key_type& x)
 			{
-				return (_tree.erase(x));
+				return (_tree.erase(value_type(x, mapped_type())));
 			}
 
 			void erase(iterator first, iterator last)
@@ -150,16 +154,18 @@ namespace ft
 				_tree.erase(first, last);
 			}
 
-			// void swap(map<Key,T,Compare,Allocator>&);
+			void swap(map<Key,T,Compare,Allocator>&) {return (_tree.swapValues());}
 
 			void clear()
 			{
 				_tree.clear();
 			}
 
+			void printTree() {_tree.printTree();}
+
 			// // observers:
-			// key_compare key_comp() const;
-			// value_compare value_comp() const;
+			key_compare key_comp() const {return (_comp);}
+			value_compare value_comp() const {return (value_compare(_comp));}
 
 			// // 23.3.1.3 map operations:
 			// iterator find(const key_type& x)
@@ -182,14 +188,14 @@ namespace ft
 			pair<const_iterator,const_iterator>
 			equal_range(const key_type& x) const;
 
-			 friend bool operator==(const map<Key,T,Compare,Allocator>& x, const map<Key,T,Compare,Allocator>& y)
+			friend bool operator==(const map<Key,T,Compare,Allocator>& x, const map<Key,T,Compare,Allocator>& y)
 			{
 				if (x.size() != y.size())
-					return (true);
-				retrun (ft::equal(x.begin(), x.end(), y.begin()));
+					return (false);
+				return (ft::equal(x.begin(), x.end(), y.begin()));
 			}
 
-			friend bool operator< (const map<Key,T,Compare,Allocator>& x, const map<Key,T,Compare,Allocator>& y)
+			friend bool operator<(const map<Key,T,Compare,Allocator>& x, const map<Key,T,Compare,Allocator>& y)
 			{
 				return (ft::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end()));
 			}

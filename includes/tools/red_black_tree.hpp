@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/23 16:47:29 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/09/29 19:09:57 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ namespace ft
 			typedef ft::Node<value_type>									Node;
 			typedef ft::RBTIterator<Node>									iterator;
 			typedef ft::ConstRBTIterator<Node>								const_iterator;
-			typedef ft::reverse_iterator<iterator>							reverse_iterator;
-			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
+			typedef ft::rb_reverse_iterator<iterator>							reverse_iterator;
+			typedef ft::rb_reverse_iterator<const_iterator>					const_reverse_iterator;
 
 			typedef Allocator												allocator_type;
 			typedef typename allocator_type::template rebind<Node>::other	node_allocator_type;
@@ -286,11 +286,12 @@ namespace ft
 
 			void	swapValues(Node *u, Node *v)
 			{
-				int	tmp;
+				Node	tmp;
 
 				tmp = u->data;
 				u->data = v->data;
 				v->data = tmp;
+				// std::swap(u, v);
 			}
 
 			// find node that do not have a left child
@@ -418,9 +419,9 @@ namespace ft
 						std::cout<< " ";
 					}
 					if (root->color == RED)
-						std::cout<< "\033[0;31m" << root->data;
+						std::cout<< "\033[0;31m" << root->data.first;
 					else
-						std::cout<< "\033[0;36m" << root->data;
+						std::cout<< "\033[0;36m" << root->data.first;
 
 					std::cout<<"\033[0;37m" << "\n";
 					printTreeHelper(root->left, space);
@@ -439,14 +440,14 @@ namespace ft
 
 				while (tmp != NULL)
 				{
-					if (n < tmp->data)
+					if (n.first < tmp->data.first)
 					{
 						if (tmp->left == NULL)
 							break ;
 						else
 							tmp = tmp->left;
 					}
-					else if (n == tmp->data)
+					else if (n.first == tmp->data.first)
 						break ;
 					else
 					{
@@ -480,7 +481,7 @@ namespace ft
 					clear();
 					insert(other.begin(), other.end());
 				}
-				return *this;
+				return (*this);
 			}
 
 			~RBTree()
@@ -509,10 +510,13 @@ namespace ft
 			// void	insert(const value_type data)
 			ft::pair<iterator,bool>	insert(const value_type& data)
 			{
+				// static int i = 0;
+				// std::cout << "insert count = " << i++ << std::endl;
+				// std::cout << "data = " << data.first <<  " data.second = "<< data.second << std::endl;
 				if (_root == NULL)
 				{
 					Node *ptr =_allocator.allocate(1);
-					_allocator.construct(ptr, Node(data));
+					_allocator.construct(ptr, data);
 					++_size;
 					ptr->color = BLACK;
 					_root = ptr;
@@ -521,9 +525,12 @@ namespace ft
 				else
 				{
 					Node *tmp = find(data);
-					if (tmp->data == data)
+					// std::cout << "find = " << tmp->data.first << std::endl;
+					if (tmp->data.first == data.first)
+					{
+						// std::cout << "ici\n";
 						return (ft::make_pair<iterator, bool>(iterator(find(data), _limit), false));
-
+					}
 					Node *ptr =_allocator.allocate(1);
 					_allocator.construct(ptr, data);
 					++_size;
@@ -586,10 +593,10 @@ namespace ft
 				if (_root == NULL)// Tree is empty
 					return (0);
 
+				std::cout << n.first << std::endl;
 				Node *v = find(n);
-				if (v->data != n)
+				if (v->data.first != n.first)
 					return (0);
-
 				deleteNode(v);
 				_update_limit();
 				return (1);
