@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/29 19:09:57 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/10 19:45:36 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,17 +284,9 @@ namespace ft
 				}
 			}
 
-			void	swapValues(Node *u, Node *v)
-			{
-				Node	tmp;
+			void	_swapValues(Node *u, Node *v) {std::swap(u, v);}
 
-				tmp = u->data;
-				u->data = v->data;
-				v->data = tmp;
-				// std::swap(u, v);
-			}
-
-			// find node that do not have a left child
+			// _find node that do not have a left child
 			// in the subtree of the given node
 			Node	*successor(Node *x)
 			{
@@ -305,7 +297,7 @@ namespace ft
 				return (tmp);
 			}
 
-			// find node that replaces a deleted node in RBTree
+			// _find node that replaces a deleted node in RBTree
 			Node	*replace(Node *x)
 			{
 				// when node have 2 children
@@ -401,7 +393,7 @@ namespace ft
 				}
 
 				// v has 2 children, swap values with successor and recurse
-				swapValues(u, v);
+				_swapValues(u, v);
 				deleteNode(u);
 			}
 
@@ -428,10 +420,7 @@ namespace ft
 				}
 			}
 
-		public:
-			void	printTree() {printTreeHelper(_root, 0);}
-
-			Node	*find(const value_type &n)
+			Node	*_find(const value_type &n)
 			{
 				Node *tmp = _root;
 
@@ -459,6 +448,9 @@ namespace ft
 				}
 				return (tmp);
 			}
+
+		public:
+			void	printTree() {printTreeHelper(_root, 0);}
 
 			// Constructor
 			RBTree(const allocator_type & alloc = allocator_type())
@@ -494,10 +486,13 @@ namespace ft
 			// Iterator
 			iterator begin() {return (_root == NULL) ? iterator(_limit, _limit) : iterator(_root->getMostLeft(), _limit);}
 			const_iterator begin() const {return (_root == NULL) ? const_iterator(_limit, _limit) : const_iterator(_root->getMostLeft(), _limit);}
+
 			iterator end() {return (iterator(_limit, _limit));}
 			const_iterator end() const {return (const_iterator(_limit, _limit));}
+
 			reverse_iterator rbegin() {return (reverse_iterator(end()));}
 			const_reverse_iterator rbegin() const {return (const_reverse_iterator(end()));}
+
 			reverse_iterator rend() {return (reverse_iterator(begin()));}
 			const_reverse_iterator rend() const {return (const_reverse_iterator(begin()));}
 
@@ -507,12 +502,8 @@ namespace ft
 			size_t	max_size() const {return (_allocator.max_size());}
 
 			// Modifiers
-			// void	insert(const value_type data)
 			ft::pair<iterator,bool>	insert(const value_type& data)
 			{
-				// static int i = 0;
-				// std::cout << "insert count = " << i++ << std::endl;
-				// std::cout << "data = " << data.first <<  " data.second = "<< data.second << std::endl;
 				if (_root == NULL)
 				{
 					Node *ptr =_allocator.allocate(1);
@@ -524,25 +515,21 @@ namespace ft
 				}
 				else
 				{
-					Node *tmp = find(data);
-					// std::cout << "find = " << tmp->data.first << std::endl;
+					Node *tmp = _find(data);
 					if (tmp->data.first == data.first)
-					{
-						// std::cout << "ici\n";
-						return (ft::make_pair<iterator, bool>(iterator(find(data), _limit), false));
-					}
+						return (ft::make_pair<iterator, bool>(iterator(_find(data), _limit), false));
 					Node *ptr =_allocator.allocate(1);
 					_allocator.construct(ptr, data);
 					++_size;
 					ptr->parent = tmp;
-					if (data < tmp->data)
+					if (data.first < tmp->data.first)
 						tmp->left = ptr;
 					else
 						tmp->right = ptr;
 					fixViolation(_root, ptr);
 				}
 				_update_limit();
-				return (ft::make_pair<iterator, bool>(iterator(_root, _limit), true));
+				return (ft::make_pair<iterator, bool>(iterator(_find(data), _limit), true));
 			}
 
 			// iterator	insert(iterator position, const value_type &data)
@@ -594,7 +581,7 @@ namespace ft
 					return (0);
 
 				std::cout << n.first << std::endl;
-				Node *v = find(n);
+				Node *v = _find(n);
 				if (v->data.first != n.first)
 					return (0);
 				deleteNode(v);
@@ -627,8 +614,11 @@ namespace ft
 			// value_compare value_comp() const;
 
 			// 23.3.1.3 map operations:
-			// iterator find(const key_type& x);
-			// const_iterator find(const key_type& x) const;
+			iterator find(const T& x)
+			{
+				return iterator(_find(x), _limit);
+			}
+			// const_iterator _find(const key_type& x) const;
 			// size_type count(const key_type& x) const;
 			// iterator lower_bound(const key_type& x);
 			// const_iterator lower_bound(const key_type& x) const;

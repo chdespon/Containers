@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:02:08 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/29 18:55:49 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/10 18:55:05 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,13 +107,23 @@ namespace ft
 			return (res);
 		}
 
+		Node	*getMostLeft()
+		{
+			Node *res = this;
+
+			while (res->left != NULL)
+				res = res->left;
+			return (res);
+		}
+
 		Node	*first(Node *node)
 		{
 			if (node == NULL)
 				return (NULL);
 			node = node->root(node);
 			if (node != NULL)
-				node = node->getMostleft();
+				while (node->left != NULL)
+					node = node->left;
 			return (node);
 		}
 
@@ -125,15 +135,6 @@ namespace ft
 			if (node != NULL)
 				node = node->getMostRight();
 			return (node);
-		}
-
-		Node	*getMostLeft()
-		{
-			Node *res = this;
-
-			while (res->left != NULL)
-				res = res->left;
-			return (res);
 		}
 
 		Node	&operator=(Node const& u)

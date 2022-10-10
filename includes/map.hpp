@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 15:24:34 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/29 19:39:25 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/10 19:43:34 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,13 @@ namespace ft
 			// iterators:
 			iterator begin() {return (_tree.begin());}
 			const_iterator begin() const {return (_tree.begin());}
+
 			iterator end() {return (_tree.end());}
 			const_iterator end() const {return (_tree.end());}
+
 			reverse_iterator rbegin() {return (_tree.rbegin());}
 			const_reverse_iterator rbegin() const {return (_tree.rbegin());}
+
 			reverse_iterator rend() {return (_tree.rend());}
 			const_reverse_iterator rend() const {return (_tree.rend());}
 
@@ -114,11 +117,7 @@ namespace ft
 			// 23.3.1.2 element access:
 			mapped_type& operator[](const key_type& key)
 			{
-				static int i =1;
-				std::cout << i++ << std::endl;
-				std::cout << ft::make_pair(key,mapped_type()).second << std::endl;
-				// return (insert(ft::make_pair(key, mapped_type())).first);
-				return ((*((insert(ft::make_pair(key,mapped_type()))).first)).second);
+				return ((*((insert(ft::make_pair(key, mapped_type()))).first)).second);
 			}
 
 			// modifiers:
@@ -154,7 +153,10 @@ namespace ft
 				_tree.erase(first, last);
 			}
 
-			void swap(map<Key,T,Compare,Allocator>&) {return (_tree.swapValues());}
+			void swap(map& )
+			{
+				// _tree.swap(x);
+			}
 
 			void clear()
 			{
@@ -168,10 +170,10 @@ namespace ft
 			value_compare value_comp() const {return (value_compare(_comp));}
 
 			// // 23.3.1.3 map operations:
-			// iterator find(const key_type& x)
-			// {
-			// 	return (_tree.find(x), _tree._limit);
-			// }
+			iterator find(const key_type& x)
+			{
+				return (_tree.find(ft::make_pair(x, mapped_type())));
+			}
 
 			// const_iterator find(const key_type& x) const
 			// {

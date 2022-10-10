@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:53:29 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/28 15:02:22 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/05 13:58:56 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int	main()
 	stack_test();
 	std::cout << "\n\nVECTOR TEST\n";
 	vector_test();
-	std::cout << "\n\nMap TEST\n";
 	map_test();
 
 	// std::cout << "RBTREE TEST\n";
