@@ -39,7 +39,7 @@ test: $(FT_NAME) $(NAME)
 		@echo "Testing DIFF on $(_YELLOW)$(NAME)$(_WHITE) and $(_YELLOW)$(FT_NAME)$(_WHITE) ... \n"
 		@./$(NAME) > test1
 		@./$(FT_NAME) > test2
-		@diff --expand-tabs --ignore-tab-expansion --side-by-side --left-column test1 test2 || true
+		@diff --expand-tabs --ignore-tab-expansion --side-by-side --left-column test2 test1 || true
 		@rm test1 test2
 		@echo "$(_GREEN)DONE$(_WHITE)\n-----"
 

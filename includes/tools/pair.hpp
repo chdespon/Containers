@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 16:53:50 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/20 18:18:43 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/18 15:50:55 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ namespace ft
 	{ return (!(lhs == rhs)); }
 
 	template <class T1, class T2>
-	bool operator<  (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)
+	bool operator< (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)
 	{ return (lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second)); }
 
 	template <class T1, class T2>

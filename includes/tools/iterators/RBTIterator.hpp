@@ -6,14 +6,14 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:06:25 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/26 14:28:19 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/24 18:43:43 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 # include "iterator.hpp"
-# include "iterator_tags.hpp"
+# include "iterator_traits.hpp"
 
 namespace ft
 {
@@ -36,7 +36,7 @@ namespace ft
 			RBTIterator(void): _node(NULL), _limit(NULL) {}
 			explicit RBTIterator(Node * n, Node *limit): _node(n), _limit(limit) {}
 
-			RBTIterator(RBTIterator const& src) {*this = src;}
+			RBTIterator(RBTIterator const &src) {*this = src;}
 
 			~RBTIterator(){}
 
@@ -51,18 +51,13 @@ namespace ft
 				return (*this);
 			}
 
-			operator	RBTIterator<const I>(void)
-			{
-				return (RBTIterator<const I>(_node));
-			}
-
 			pointer	base() {return (_node);} // explicit
 
 			value_reference	operator*() const {return (_node->data);}
 
-			value_pointer	operator->() {return (&(operator*()));}
+			value_pointer	operator->() {return &(_node->data);}
 
-			const value_pointer	operator->() const {return (&(operator*()));}
+			const value_pointer	operator->() const {return &(_node->data);}
 
 			RBTIterator	&operator++()
 			{
@@ -105,8 +100,9 @@ namespace ft
 
 			RBTIterator	operator++(int)
 			{
+				RBTIterator tmp = *this;
 				operator++();
-				return (*this);
+				return (tmp);
 			}
 
 			RBTIterator	&operator--()
@@ -150,8 +146,9 @@ namespace ft
 
 			RBTIterator	operator--(int)
 			{
+				RBTIterator tmp = *this;
 				operator--();
-				return (*this);
+				return (tmp);
 			}
 
 			bool	operator==(const RBTIterator &other) const
@@ -171,23 +168,11 @@ namespace ft
 		return (x.base() == y.base());
 	}
 
-	// template <class I>
-	// bool	operator!=(RBTIterator<I> &x, RBTIterator<I> &y)
-	// {
-	// 	return (x.base() != y.base());
-	// }
-
 	template <class TL, class TR>
 	bool	operator==(RBTIterator<TL> const &x, RBTIterator<TR> const &y)
 	{
 		return (x.base() == y.base());
 	}
-
-	// template <class TL, class TR>
-	// bool	operator!=(RBTIterator<TL> &x, RBTIterator<TR> &y)
-	// {
-	// 	return (x.base() != y.base());
-	// }
 
 	template<class I>
 	class ConstRBTIterator: public iterator<bidirectional_iterator_tag, I>
@@ -208,7 +193,11 @@ namespace ft
 			ConstRBTIterator(void): _node(NULL), _limit(NULL) {}
 			explicit ConstRBTIterator(Node * n, Node *limit): _node(n), _limit(limit) {}
 
-			ConstRBTIterator(ConstRBTIterator const& src) {*this = src;}
+			ConstRBTIterator(ConstRBTIterator const &src): _node(src._node), _limit(src._limit)
+			{}
+
+			ConstRBTIterator(ft::RBTIterator<I> const &src): _node(src._node), _limit(src._limit)
+			{}
 
 			~ConstRBTIterator(){}
 
@@ -223,16 +212,13 @@ namespace ft
 				return (*this);
 			}
 
-			operator	ConstRBTIterator<const I>(void) const
-			{
-				return (ConstRBTIterator<const I>(_node));
-			}
-
 			ConstRBTIterator	base() {return (_node);} // explicit
 
-			reference	operator*() const {return *(_node);}
+			value_reference	operator*() const {return (_node->data);}
 
-			pointer	operator->() const {return (&(operator*()));}
+			value_pointer	operator->() {return &(_node->data);}
+
+			const value_pointer	operator->() const {return &(_node->data);}
 
 			ConstRBTIterator	&operator++()
 			{
@@ -275,8 +261,9 @@ namespace ft
 
 			ConstRBTIterator	operator++(int)
 			{
+				ConstRBTIterator tmp = *this;
 				operator++();
-				return (*this);
+				return (tmp);
 			}
 
 			ConstRBTIterator	&operator--()

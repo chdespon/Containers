@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 18:06:25 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/21 15:10:37 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/24 17:03:33 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ namespace ft
 			vector(const vector& other)
 			: _datas(NULL), _capacity(other._capacity), _size(other._size), _allocator(other._allocator)
 			{
-				_datas = _allocator.allocate(_size);
+				_datas = _allocator.allocate(_capacity);
 				for (size_type i = 0; i < _size; ++i)
 					_allocator.construct(&_datas[i], other._datas[i]);
 			}
@@ -271,7 +271,7 @@ namespace ft
 					++n;
 				if (_size + n > _capacity * 2)
 					reserve(_size + n);
-				 else if (_size + n > _capacity)
+				else if (_size + n > _capacity)
 					reserve(_capacity * 2);
 
 				position = begin() + pos;
@@ -295,40 +295,21 @@ namespace ft
 				return (position);
 			}
 
-			iterator erase(iterator first, iterator last) //TODO erase do not segfault when last is to big
+			iterator erase(iterator first, iterator last)
 			{
-				iterator it_return(first);
-				iterator it_end(end());
-
-				// while (last < it_end)
-				// 	*first++ = *last++;
-				// if (last +1 == it_end)
-				// {
-				// 	_GLIBCXX_MOVE3(last, it_end, it_return);
-				// 	++first;
-				// 	while (first < last+1)
-				// 	{
-				// 		_allocator.destroy(&*first);
-				// 		++first;
-				// 		--_size;
-				// 	}
-				// 	return (it_return);
-				// }
-				_GLIBCXX_MOVE3(last, it_end, it_return);
-				while (first < last)
-				{
-					_allocator.destroy(&*first);
-					++first;
-					--_size;
-				}
-				return (it_return);
+				size_type n = 0;
+				for (iterator it = first; it != last; ++it)
+					++n;
+				for (size_type i(0); i < n; i++)
+					erase(first);
+				return first;
 			}
 
 			void swap(vector<T,Allocator> &x)
 			{
-				T	*tmp_datas(_datas); _datas = x._datas; x._datas = tmp_datas;
-				T	tmp_size(_size); _size = x._size; x._size = tmp_size;
-				T	tmp_capacity(_capacity); _capacity = x._capacity; x._capacity = tmp_capacity;
+				std::swap(_datas, x._datas);
+				std::swap(_size, x._size);
+				std::swap(_capacity, x._capacity);
 			}
 
 			void clear()
@@ -378,7 +359,7 @@ namespace ft
 	}
 
 	template <class T, class Alloc>
-		void swap (vector<T,Alloc>& x, vector<T,Alloc>& y)
+	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y)
 	{
 		x.swap(y);
 	}

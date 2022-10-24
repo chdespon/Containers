@@ -6,14 +6,15 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/04 18:04:12 by chdespon          #+#    #+#             */
-/*   Updated: 2022/07/04 18:10:17 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/24 18:44:14 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEXICOGRAPICAL_COMPARE_HPP
 # define LEXICOGRAPICAL_COMPARE_HPP
 
-namespace ft {
+namespace ft
+{
 
 	template<class InputIt1, class InputIt2>
 	bool lexicographical_compare(InputIt1 first1, InputIt1 last1,

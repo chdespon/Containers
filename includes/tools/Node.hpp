@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:02:08 by chdespon          #+#    #+#             */
-/*   Updated: 2022/10/10 18:55:05 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/24 18:43:20 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,26 @@
 enum Color {RED, BLACK};
 namespace ft
 {
+	template < typename T>
+	struct less : public std::binary_function<T, T, bool>
+	{
+		bool	operator()(const T & x, const T & y) const
+		{
+			return (x < y);
+		}
+	};
+
 	template<class T>
 	struct Node
 	{
-		typedef T	value_type;
+		typedef T		value_type;
+		typedef Node*	pointer;
 
-		T		data;
-		bool	color;
-		Node<T>	*left;
-		Node<T>	*right;
-		Node<T>	*parent;
+		value_type	data;
+		bool		color;
+		pointer		left;
+		pointer		right;
+		pointer		parent;
 
 		// Constructor
 		Node(): data(), color(RED), left(NULL), right(NULL), parent(NULL) {}
@@ -38,19 +48,6 @@ namespace ft
 		Node(Node const &cpy)
 		: data(cpy.data), color(cpy.color), left(cpy.left), right(cpy.right), parent(cpy.parent)
 		{}
-
-		// Node &operator=(const Node &node)
-		// {
-		// 	if (this != &node)
-		// 	{
-		// 		data = node.data;
-		// 		color = node.color;
-		// 		left = node.left;
-		// 		right = node.right;
-		// 		parent = node.parent;
-		// 	}
-		// 	return (*this);
-		// }
 
 		~Node() {}
 
@@ -78,7 +75,12 @@ namespace ft
 		}
 
 		// check if node is left child of parent
-		bool	isOnLeft() {return (this == parent->left);}
+		bool	isOnLeft()
+		{
+			if (parent != NULL && parent->left == this)
+				return (true) ;
+			return (false) ;
+		}
 
 		// returns pointer to sibling
 		Node	*sibling()

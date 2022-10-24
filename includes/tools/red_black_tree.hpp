@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 18:23:39 by chdespon          #+#    #+#             */
-/*   Updated: 2022/10/10 19:45:36 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/24 17:37:01 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@
 # include "reverse_iterator.hpp"
 # include "is_integral.hpp"
 # include "enable_if.hpp"
+# include "lexicographical_compare.hpp"
 
 namespace ft
 {
-	template <class T, class Compare = std::less<T>,
-		class Allocator = std::allocator<T> >
+	template <class T, class Compare, class Allocator = std::allocator<T> >
 	class RBTree
 	{
 		public:
@@ -31,8 +31,9 @@ namespace ft
 			typedef ft::Node<value_type>									Node;
 			typedef ft::RBTIterator<Node>									iterator;
 			typedef ft::ConstRBTIterator<Node>								const_iterator;
-			typedef ft::rb_reverse_iterator<iterator>							reverse_iterator;
+			typedef ft::rb_reverse_iterator<iterator>						reverse_iterator;
 			typedef ft::rb_reverse_iterator<const_iterator>					const_reverse_iterator;
+			typedef Compare													compare;
 
 			typedef Allocator												allocator_type;
 			typedef typename allocator_type::template rebind<Node>::other	node_allocator_type;
@@ -43,7 +44,7 @@ namespace ft
 			Node							*_limit;
 			typename Allocator::size_type	_size;
 			node_allocator_type				_allocator;
-
+			compare							_cmp;
 
 			void	_destroy_tree(Node *node)
 			{
@@ -72,6 +73,155 @@ namespace ft
 			void	_update_limit()
 			{
 				_limit->parent = _root;
+			}
+
+		public:
+			void	printTree() {printTreeHelper(_root, 0);}
+
+			// Constructor
+			RBTree(const compare& cmp = compare(), const allocator_type & alloc = allocator_type())
+			:_root(NULL), _size(0), _allocator(alloc), _cmp(cmp)
+			{
+				_limit = _create_limit();
+			}
+
+			RBTree(const RBTree &copy)
+			: _root(NULL), _size(0), _allocator(copy._allocator), _cmp(copy._cmp)
+			{
+				_limit = _create_limit();
+				insert(copy.begin(), copy.end());
+			}
+
+			RBTree	&operator=(const RBTree &other)
+			{
+				if (this != &other)
+				{
+					clear();
+					insert(other.begin(), other.end());
+				}
+				return (*this);
+			}
+
+			~RBTree()
+			{
+				clear();
+				_allocator.destroy(_limit);
+				_allocator.deallocate(_limit, 1);
+			}
+
+			// Iterator
+			iterator begin() {return (_root == NULL) ? iterator(_limit, _limit) : iterator(_root->getMostLeft(), _limit);}
+			const_iterator begin() const {return (_root == NULL) ? const_iterator(_limit, _limit) : const_iterator(_root->getMostLeft(), _limit);}
+
+			iterator end() {return (iterator(_limit, _limit));}
+			const_iterator end() const {return (const_iterator(_limit, _limit));}
+
+			reverse_iterator rbegin() {return (reverse_iterator(end()));}
+			const_reverse_iterator rbegin() const {return (const_reverse_iterator(end()));}
+
+			reverse_iterator rend() {return (reverse_iterator(begin()));}
+			const_reverse_iterator rend() const {return (const_reverse_iterator(begin()));}
+
+			// Capacity
+			bool	empty() const {return (_root == NULL);}
+			size_t	size() const {return (_size);}
+			size_t	max_size() const {return (_allocator.max_size());}
+
+			// Modifiers
+			ft::pair<iterator,bool>	insert(const value_type& data)
+			{
+				if (_root == NULL)
+				{
+					Node *ptr =_allocator.allocate(1);
+					_allocator.construct(ptr, data);
+					++_size;
+					ptr->color = BLACK;
+					_root = ptr;
+					fixViolation(_root, ptr);
+				}
+				else
+				{
+					Node *tmp = _find(data);
+					if (!_cmp(data, tmp->data) && !_cmp(tmp->data, data))
+						return (ft::make_pair<iterator, bool>(iterator(_find(data), _limit), false));
+					Node *ptr =_allocator.allocate(1);
+					_allocator.construct(ptr, data);
+					++_size;
+					ptr->parent = tmp;
+					if (_cmp(data, tmp->data) == 1)
+						tmp->left = ptr;
+					else
+						tmp->right = ptr;
+					fixViolation(_root, ptr);
+				}
+				_update_limit();
+				return (ft::make_pair<iterator, bool>(iterator(_find(data), _limit), true));
+			}
+
+			template < typename InputIterator >
+			void insert(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = NULL )
+			{
+				while (first != last)
+				{
+					insert(*first);
+					++first;
+				}
+			}
+
+			void	erase(iterator position)
+			{
+				if (position != end())
+				{
+					_delete(position._node);
+					_update_limit();
+				}
+			}
+
+			size_t	erase(const value_type& n)
+			{
+				if (_root == NULL)// Tree is empty
+					return (0);
+
+				Node *v = _find(n);
+				if (_cmp(n, v->data) && _cmp(v->data, n))
+					return (0);
+				_delete(v);
+				_update_limit();
+				return (1);
+			}
+
+			void	erase(iterator first, iterator last)
+			{
+				iterator tmp;
+
+				while (first != last)
+				{
+					tmp = first;;
+					++tmp;
+					erase(first);
+					first = tmp;
+				}
+			}
+
+			void	swap(RBTree &other)
+			{
+				std::swap(_root, other._root);
+				std::swap(_limit, other._limit);
+				std::swap(_cmp, other._cmp);
+				std::swap(_size, other._size);
+			}
+
+			void	clear()
+			{
+				_destroy_tree(_root);
+				_root = NULL;
+				_update_limit();
+			}
+
+			// 23.3.1.3 map operations:
+			iterator find(const T& x) const
+			{
+				return (iterator(_find(x), _limit));
 			}
 
 		protected:
@@ -284,8 +434,6 @@ namespace ft
 				}
 			}
 
-			void	_swapValues(Node *u, Node *v) {std::swap(u, v);}
-
 			// _find node that do not have a left child
 			// in the subtree of the given node
 			Node	*successor(Node *x)
@@ -339,10 +487,6 @@ namespace ft
 						else if (v->sibling() != NULL)
 							// sibling is not null, make it red"
 							v->sibling()->color = RED;
-						// {
-
-						// }
-
 						// delete v from the tree
 						if (v->isOnLeft())
 							parent->left = NULL;
@@ -361,7 +505,6 @@ namespace ft
 					if (v == _root)
 					{
 						// v is root, delete v and make u root
-
 						u->color = BLACK;
 						u->parent = NULL;
 						u->left = u->right = NULL;
@@ -391,10 +534,170 @@ namespace ft
 					}
 					return ;
 				}
-
-				// v has 2 children, swap values with successor and recurse
-				_swapValues(u, v);
+				// std::swap(u->data, v->data);
+				// _swapValues(u, v);
 				deleteNode(u);
+			}
+
+			void	_transplant(Node* deleted, Node* replaced)
+			{
+				if (deleted->parent == NULL)
+					_root = replaced;
+				else if (deleted->isOnLeft())
+					deleted->parent->left = replaced;
+				else
+					deleted->parent->right = replaced;
+				if (replaced != NULL)
+					replaced->parent = deleted->parent;
+			}
+
+			/*
+			** Delete :
+			*/
+
+			void	_delete(Node *to_dell)
+			{
+				Node *child = NULL;
+				Node *successor = to_dell;
+				Node *parent = to_dell->parent;
+
+				bool original_color = to_dell->color;
+				bool child_is_left = to_dell->isOnLeft();
+
+				// if is not only one
+				if (_size > 1)
+				{
+				// check if no child or onlsuccessor one
+					if (to_dell->left == NULL)
+					{
+						child = to_dell->right;
+						_transplant(to_dell, to_dell->right);
+					}
+					else if (to_dell->right == NULL)
+					{
+						child = to_dell->left;
+						_transplant(to_dell, to_dell->left);
+					}
+					else // two childs
+					{
+						successor = to_dell->right->getMostLeft();
+						original_color = successor->color;
+						child = successor->right;
+						child_is_left = successor->isOnLeft();
+						if (successor->parent == to_dell) // direct child
+							parent = successor;
+						else
+						{
+							_transplant(successor, successor->right);
+							successor->right = to_dell->right;
+							successor->right->parent = successor;
+							parent = successor->parent;
+						}
+						_transplant(to_dell, successor);
+						successor->left = to_dell->left;
+						successor->left->parent = successor;
+						successor->color = to_dell->color;
+					}
+					if (child != NULL)
+						parent = child->parent;
+					if (original_color == BLACK && _size > 2)
+						_delete_fixup(child, parent, child_is_left);
+				}
+				_allocator.destroy(to_dell);
+				_allocator.deallocate(to_dell, 1);
+				if (to_dell == _root)
+					_root = NULL;
+				--_size;
+				if (_root)
+					_root->color = BLACK;
+			}
+
+			void	_delete_fixup(Node* current, Node* parent, bool is_left)
+			{
+				Node* sister;
+
+				while (current == NULL || (current != _root && current->color == BLACK ))
+				{
+					if (current != NULL)
+						is_left = current->isOnLeft();
+					if (is_left == true)
+					{
+						sister = parent->right;
+						if (sister != NULL && sister->color == RED)
+						{
+							sister->color = BLACK;
+							parent->color = RED;
+							rotateLeft(_root,parent);
+							sister = parent->right;
+						}
+						if (sister != NULL && (sister->left == NULL || sister->left->color == BLACK)
+						&& (sister->right == NULL || sister->right->color == BLACK))
+						{
+							sister->color = RED;
+							current = parent;
+							parent = parent->parent;
+						}
+						else
+						{
+							if (sister != NULL && (sister->right == NULL || sister->right->color == BLACK))
+							{
+								if (sister->left != NULL)
+									sister->left->color = BLACK;
+								sister->color = RED;
+								rotateRight(_root, sister);
+								sister = parent->right;
+							}
+							if (sister != NULL)
+								sister->color = parent->color;
+							parent->color = BLACK;
+							if (sister && sister->right != NULL)
+								sister->right->color = BLACK;
+							rotateLeft(_root, parent);
+							current = _root;
+							parent = _limit;
+						}
+					}
+					else
+					{
+						sister = parent->left;
+						if (sister != NULL && sister->color == RED)
+						{
+							sister->color = BLACK;
+							parent->color = RED;
+							rotateRight(_root, parent);
+							sister = parent->left;
+						}
+						if (sister != NULL
+						&& (sister->left == NULL || sister->left->color == BLACK)
+						&& (sister->right == NULL || sister->right->color == BLACK))
+						{
+							sister->color = RED;
+							current = parent;
+							parent = parent->parent;
+						}
+						else
+						{
+							if (sister != NULL && (sister->left == NULL || sister->left->color == BLACK))
+							{
+								if (sister->right != NULL)
+									sister->right->color = BLACK;
+								sister->color = RED;
+								rotateLeft(_root, sister);
+								sister = parent->left;
+							}
+							if (sister != NULL)
+								sister->color = parent->color;
+							parent->color = BLACK;
+							if (sister != NULL && sister->left != NULL)
+								sister->left->color = BLACK;
+							rotateRight(_root, parent);
+							current = _root;
+							parent = _limit;
+						}
+					}
+				}
+				if (current != NULL)
+					current->color = BLACK;
 			}
 
 			void	printTreeHelper(Node *root, int space)
@@ -420,23 +723,24 @@ namespace ft
 				}
 			}
 
-			Node	*_find(const value_type &n)
+			Node	*_find(const value_type &n) const
 			{
 				Node *tmp = _root;
-
 				if (tmp == NULL)
 					return (_limit);
 
 				while (tmp != NULL)
 				{
-					if (n.first < tmp->data.first)
+					if (_cmp(n, tmp->data) == 1)
+					// if (n.first < tmp->data.first)
 					{
 						if (tmp->left == NULL)
 							break ;
 						else
 							tmp = tmp->left;
 					}
-					else if (n.first == tmp->data.first)
+					// else if (n.first == tmp->data.first)
+					else if (!_cmp(tmp->data, n) && !_cmp(n, tmp->data))
 						break ;
 					else
 					{
@@ -448,185 +752,5 @@ namespace ft
 				}
 				return (tmp);
 			}
-
-		public:
-			void	printTree() {printTreeHelper(_root, 0);}
-
-			// Constructor
-			RBTree(const allocator_type & alloc = allocator_type())
-			:_root(NULL), _size(0), _allocator(alloc)
-			{
-				_limit = _create_limit();
-			}
-
-			RBTree(const RBTree &copy)
-			: _root(NULL), _size(0), _allocator(copy._allocator)
-			{
-				_limit = _create_limit();
-				insert(copy.begin(), copy.end());
-			}
-
-			RBTree	&operator=(const RBTree &other)
-			{
-				if (this != &other)
-				{
-					clear();
-					insert(other.begin(), other.end());
-				}
-				return (*this);
-			}
-
-			~RBTree()
-			{
-				clear();
-				_allocator.destroy(_limit);
-				_allocator.deallocate(_limit, 1);
-			}
-
-			// Iterator
-			iterator begin() {return (_root == NULL) ? iterator(_limit, _limit) : iterator(_root->getMostLeft(), _limit);}
-			const_iterator begin() const {return (_root == NULL) ? const_iterator(_limit, _limit) : const_iterator(_root->getMostLeft(), _limit);}
-
-			iterator end() {return (iterator(_limit, _limit));}
-			const_iterator end() const {return (const_iterator(_limit, _limit));}
-
-			reverse_iterator rbegin() {return (reverse_iterator(end()));}
-			const_reverse_iterator rbegin() const {return (const_reverse_iterator(end()));}
-
-			reverse_iterator rend() {return (reverse_iterator(begin()));}
-			const_reverse_iterator rend() const {return (const_reverse_iterator(begin()));}
-
-			// Capacity
-			bool	empty() const {return (_root == NULL);}
-			size_t	size() const {return (_size);}
-			size_t	max_size() const {return (_allocator.max_size());}
-
-			// Modifiers
-			ft::pair<iterator,bool>	insert(const value_type& data)
-			{
-				if (_root == NULL)
-				{
-					Node *ptr =_allocator.allocate(1);
-					_allocator.construct(ptr, data);
-					++_size;
-					ptr->color = BLACK;
-					_root = ptr;
-					fixViolation(_root, ptr);
-				}
-				else
-				{
-					Node *tmp = _find(data);
-					if (tmp->data.first == data.first)
-						return (ft::make_pair<iterator, bool>(iterator(_find(data), _limit), false));
-					Node *ptr =_allocator.allocate(1);
-					_allocator.construct(ptr, data);
-					++_size;
-					ptr->parent = tmp;
-					if (data.first < tmp->data.first)
-						tmp->left = ptr;
-					else
-						tmp->right = ptr;
-					fixViolation(_root, ptr);
-				}
-				_update_limit();
-				return (ft::make_pair<iterator, bool>(iterator(_find(data), _limit), true));
-			}
-
-			// iterator	insert(iterator position, const value_type &data)
-			// {
-			// 	if (position != end())
-			// 	{
-			// 		iterator next = position;
-			// 		++next;
-			// 		if (position._node->data < data && (next == end() || next._node->data < data))
-			// 		{
-			// 			if (position._node->parent == next._node || next == end())
-			// 			{
-			// 				position._node->_right = _allocator.allocate(1);
-			// 				_allocator.construct(position._node->_right, data);
-			// 				++_size;
-			// 				position._node->_right->_parent = position._node;
-			// 			}
-			// 			else
-			// 			{
-			// 				next._node
-			// 			}
-
-			// 		}
-			// 	}
-			// }
-
-			template < typename InputIterator >
-			void insert(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = NULL )
-			{
-				while (first != last)
-				{
-					insert(first._node->data);
-					++first;
-				}
-			}
-
-			void	erase(iterator position)
-			{
-				if (position != end())
-				{
-					deleteNode(position._node);
-					_update_limit();
-				}
-			}
-
-			size_t	erase(const value_type& n)
-			{
-				if (_root == NULL)// Tree is empty
-					return (0);
-
-				std::cout << n.first << std::endl;
-				Node *v = _find(n);
-				if (v->data.first != n.first)
-					return (0);
-				deleteNode(v);
-				_update_limit();
-				return (1);
-			}
-
-			void	erase(iterator first, iterator last)
-			{
-				iterator tmp;
-
-				while (first != last)
-				{
-					tmp = first;;
-					++tmp;
-					erase(first);
-					first = tmp;
-				}
-			}
-
-			void	clear()
-			{
-				_destroy_tree(_root);
-				_root = NULL;
-				_update_limit();
-			}
-
-			// observers:
-			// key_compare key_comp() const;
-			// value_compare value_comp() const;
-
-			// 23.3.1.3 map operations:
-			iterator find(const T& x)
-			{
-				return iterator(_find(x), _limit);
-			}
-			// const_iterator _find(const key_type& x) const;
-			// size_type count(const key_type& x) const;
-			// iterator lower_bound(const key_type& x);
-			// const_iterator lower_bound(const key_type& x) const;
-			// iterator upper_bound(const key_type& x);
-			// const_iterator upper_bound(const key_type& x) const;
-			// ft::pair<iterator,iterator>
-			// equal_range(const key_type& x);
-			// ft::pair<const_iterator,const_iterator>
-			// equal_range(const key_type& x) const;
 	};
 }

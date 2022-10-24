@@ -6,7 +6,7 @@
 /*   By: chdespon <chdespon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 15:28:48 by chdespon          #+#    #+#             */
-/*   Updated: 2022/09/25 16:51:03 by chdespon         ###   ########.fr       */
+/*   Updated: 2022/10/24 16:32:58 by chdespon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,6 +314,34 @@ void	vector_test(void)
 	}
 	std::cout << "\n---insert test---" << std::endl;
 	{
+		ft::vector<int>			test(3, 3);
+			ft::vector<ft::vector<int> >	insert_in_me;
+	for (int i = 0; i < 15; i++)
+	{
+		ft::vector<int>	j(2, i);
+		insert_in_me.push_back(j);
+	}
+	for (size_t i = 0; i < insert_in_me.size(); i++)
+	{
+		for (size_t j = 0; j < insert_in_me.at(i).size(); j++)
+			std::cout << insert_in_me.at(i).at(j) << ' ';
+		std::cout << '\n';
+	}
+
+	ft::vector<ft::vector<int> >::iterator	tmp;
+	test.assign(23, 19);
+	tmp = insert_in_me.begin() + 4;
+	insert_in_me.insert(tmp, 8, test);
+	for (size_t i = 0; i < insert_in_me.size(); i++)
+	{
+		for (size_t j = 0; j < insert_in_me.at(i).size(); j++)
+			std::cout << insert_in_me.at(i).at(j) << ' ';
+		std::cout << '\n';
+	}
+
+	ft::vector<ft::vector<int> >::const_iterator const_it(insert_in_me.begin());
+	std::cout << "Const it.front() : " << std::endl;
+	std::cout << (*const_it).front() << '\n';
 		ft::vector<int> myvector (3,100);
 		ft::vector<int>::iterator it;
 
